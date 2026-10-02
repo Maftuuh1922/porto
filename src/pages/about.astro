@@ -1,47 +1,59 @@
 ---
 import Base from '../layouts/Base.astro';
 
-/* benda di "meja" — alat & tanda yang benar-benar saya pakai, miring seperti halaman about yuvich.
-   tiap benda punya logo sesuai judulnya dan bisa digeser */
+/* Benda di "meja" — gambar telanjang tanpa kotak, persis pola halaman about yuvich.
+   Diambil/di-hover muncul pil keterangan; bisa digeser lalu kembali ke tempatnya. */
 const objects = [
-  { left: '4%', top: '8px', rot: '-5deg', logo: '/logos/hermes.png', title: 'Hermes', sub: 'agen AI',
-    spec: 'otomasi harian · bot Telegram · cron', id: 'o1' },
-  { left: '37%', top: '0px', rot: '4deg', logo: '/logos/nextdotjs.svg', title: 'Next.js', sub: 'TypeScript',
-    spec: 'NeovarchLabs · situs produksi + invoice PDF', id: 'o2' },
-  { left: '69%', top: '26px', rot: '-7deg', logo: '/logos/9router.svg', title: '9router', sub: 'gateway LLM',
-    spec: 'gabung 1.500+ model dari belasan penyedia', id: 'o3' },
-  { left: '5%', top: '172px', rot: '6deg', logo: '/logos/github.svg', title: 'GitHub', sub: 'Maftuuh1922',
-    spec: '48 repositori publik · 10 followers', id: 'o4' },
-  { left: '38%', top: '178px', rot: '-4deg', logo: '/logos/flutter.svg', title: 'Flutter', sub: 'Dart',
-    spec: 'aplikasi_berita, sales-management, Tunein', id: 'o5' },
-  { left: '70%', top: '196px', rot: '8deg', logo: '/logos/python.svg', title: 'Python', sub: 'FastAPI',
-    spec: 'Nalar.ai-be · indeks & RAG, 1.204 dokumen', id: 'o6' },
-  { left: '6%', top: '336px', rot: '-6deg', logo: '/logos/linux.svg', title: 'Linux', sub: 'VPS',
-    spec: 'bot Telegram, gateway 9router, cron', id: 'o7' },
-  { left: '40%', top: '348px', rot: '5deg', logo: '/logos/astro.svg', title: 'Astro', sub: 'Tailwind',
-    spec: 'situs yang sedang Anda baca ini', id: 'o8' },
-  { left: '71%', top: '360px', rot: '-10deg', logo: '/logos/sqlite.svg', title: 'SQLite', sub: 'Turso',
-    spec: 'basis data NeovarchLabs', id: 'o9' },
+  { left: '3%', top: '6px', rot: '-4deg', src: '/logos/hermes.png', w: 104, h: 104,
+    alt: 'Logo Hermes, agen AI yang saya jalankan di mesin ini',
+    spec: 'Hermes · otomasi harian · bot Telegram · cron', id: 'o1' },
+  { left: '41%', top: '0px', rot: '7deg', src: '/logos/nextdotjs.svg', w: 76, h: 76,
+    alt: 'Logo Next.js',
+    spec: 'Next.js · NeovarchLabs · situs produksi + invoice PDF', id: 'o2' },
+  { left: '73%', top: '40px', rot: '-8deg', src: '/logos/9router.svg', w: 92, h: 92,
+    alt: 'Logo 9router, gateway LLM buatan saya',
+    spec: '9router · gabung 1.500+ model dari belasan penyedia', id: 'o3' },
+  { left: '6%', top: '168px', rot: '5deg', src: '/logos/github.svg', w: 84, h: 84,
+    alt: 'Logo GitHub',
+    spec: 'GitHub · Maftuuh1922 · 48 repositori publik', id: 'o4' },
+  { left: '44%', top: '150px', rot: '-6deg', src: '/logos/flutter.svg', w: 78, h: 78,
+    alt: 'Logo Flutter',
+    spec: 'Flutter · aplikasi_berita, sales-management, Tunein', id: 'o5' },
+  { left: '76%', top: '194px', rot: '8deg', src: '/logos/python.svg', w: 86, h: 86,
+    alt: 'Logo Python',
+    spec: 'Python · Nalar.ai-be · indeks & RAG 1.204 dokumen', id: 'o6' },
+  { left: '4%', top: '330px', rot: '-5deg', src: '/logos/linux.svg', w: 96, h: 96,
+    alt: 'Logo Linux',
+    spec: 'Linux · VPS · bot Telegram, gateway, cron', id: 'o7' },
+  { left: '43%', top: '334px', rot: '6deg', src: '/logos/astro.svg', w: 76, h: 76,
+    alt: 'Logo Astro',
+    spec: 'Astro · situs yang sedang Anda baca ini', id: 'o8' },
+  { left: '74%', top: '362px', rot: '-11deg', src: '/logos/sqlite.svg', w: 82, h: 82,
+    alt: 'Logo SQLite',
+    spec: 'SQLite · basis data NeovarchLabs (Turso)', id: 'o9' },
 ];
 ---
 <Base title="About · Muhammad Maftuh" active="about">
   <section class="wide" aria-label="Alat kerja saya">
     <div class="desk-mat">
       {
-        objects.map((o) => (
-          <div class="desk-object" id={o.id} style={`left:${o.left};top:${o.top};--rot:${o.rot};`}>
-            <div class="chip">
-              <img class="chip-logo" src={o.logo} alt="" width="20" height="20" loading="lazy" />
-              <span class="chip-txt">
-                <b>{o.title}</b>
-                <span class="chip-sub">{o.sub}</span>
-              </span>
+        objects.map((o) => {
+          /* kolom kiri/tengah/kanan — supaya pil keterangan tidak keluar layar di HP */
+          const col = parseInt(o.left) < 35 ? 'l' : parseInt(o.left) < 65 ? 'm' : 'r';
+          return (
+            <div
+              class={`desk-object flat col-${col}`}
+              id={o.id}
+              style={`left:${o.left};top:${o.top};--rot:${o.rot};`}
+            >
+              <img src={o.src} alt={o.alt} width={o.w} height={o.h} loading="lazy" />
+              <span class="spec meta" aria-hidden="true">{o.spec}</span>
             </div>
-            <span class="spec">{o.spec}</span>
-          </div>
-        ))
+          );
+        })
       }
     </div>
+    <p class="hole-caption">ambil salah satu untuk membacanya</p>
   </section>
 
   <section class="block prose">
@@ -70,4 +82,8 @@ const objects = [
       <a class="link" href="https://www.linkedin.com/in/muhammad-maftuh-798331386">linkedin</a>.
     </p>
   </section>
+
+  <script>
+    import '../scripts/desk';
+  </script>
 </Base>
