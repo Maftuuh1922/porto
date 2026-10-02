@@ -162,7 +162,7 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
 /* ---- meja (about): benda telanjang di atas latar polos, tanpa kartu ---- */
 .desk-mat{position:relative;width:min(var(--wide),100vw - 2rem);margin-inline:auto;min-height:560px}
 .desk-object img{pointer-events:none;display:block;filter:drop-shadow(0 12px 20px rgba(16,16,20,.16))}
-.desk-object{position:absolute;touch-action:none;cursor:grab;user-select:none;transition:transform .25s ease;
+.desk-object{position:absolute;top:calc(var(--t,0) * 1px);touch-action:none;cursor:grab;user-select:none;transition:transform .25s ease;
   transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg));will-change:transform}
 .desk-object:hover{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) translateY(-3px);z-index:3}
 .desk-object.dragging{cursor:grabbing;transition:none;z-index:41}
@@ -181,14 +181,16 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
 @media (max-width:640px){
   .site-nav{gap:16px}
   .site-foot{flex-direction:column;gap:6px}
-  /* meja di HP: benda mengecil, posisi tetap seperti halaman contoh */
-  .desk-mat{min-height:470px}
+  /* meja di HP: seperti halaman contoh — mat pendek (360px), benda mengecil 62% dan
+     tersebar lebih jauh sehingga benda paling bawah tumpah ke atas paragraf */
+  .desk-mat{min-height:360px}
+  .desk-mat .desk-object{top:calc(var(--t,0) * 1.55px)}
   /* pil keterangan dipanjangkan ke arah aman supaya tidak membuat geser layar ke samping */
   .desk-object .spec{max-width:150px;white-space:normal;text-align:center}
   .col-l .spec{left:0;transform-origin:top left;transform:rotate(calc(var(--rot,0deg) * -1))}
   .col-r .spec{left:auto;right:0;transform-origin:top right;transform:rotate(calc(var(--rot,0deg) * -1))}
   .col-m .spec{left:50%;transform:translateX(-50%) rotate(calc(var(--rot,0deg) * -1))}
-  .desk-mat .desk-object{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) scale(.7);
+  .desk-mat .desk-object{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) scale(.62);
     transform-origin:0 0}
-  .desk-mat .desk-object:hover{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) scale(.7)}
+  .desk-mat .desk-object:hover{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) scale(.62)}
 }

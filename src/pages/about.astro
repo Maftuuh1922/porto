@@ -44,7 +44,7 @@ const objects = [
             <div
               class={`desk-object flat col-${col}`}
               id={o.id}
-              style={`left:${o.left};top:${o.top};--rot:${o.rot};`}
+              style={`left:${o.left};--t:${parseInt(o.top, 10)};--rot:${o.rot};`}
             >
               <img src={o.src} alt={o.alt} width={o.w} height={o.h} loading="lazy" />
               <span class="spec meta" aria-hidden="true">{o.spec}</span>
