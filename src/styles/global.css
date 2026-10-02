@@ -142,17 +142,31 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 .qris .paid{color:#2f9155;font-weight:600;animation:pulse 2.6s ease-in-out infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 
-/* ---- hero (index) ---- */
-.hero-hole{width:min(var(--wide),100vw - 2rem);margin-inline:auto;display:grid;justify-items:center;gap:10px}
-.hero-hole canvas{width:100%;height:auto;aspect-ratio:560/347;display:block;cursor:crosshair}
-.hole-caption{font-family:var(--mono);font-size:12px;color:var(--mute);letter-spacing:.04em}
+/* ---- hero (index): lubang hitam ---- */
+.hero-hole{width:min(var(--wide),100vw - 2rem);margin:-28px auto 0}
+.hero-hole .blackhole-object{z-index:30;width:100%;line-height:0;position:relative;
+  touch-action:none;cursor:grab;user-select:none;
+  transform:translate(var(--dx,0px),var(--dy,0px));will-change:transform}
+.hero-hole .blackhole-object.dragging{cursor:grabbing;z-index:41}
+.blackhole-object canvas{aspect-ratio:560/347;width:100%;height:auto;display:block}
+.blackhole-object .bh-rays{pointer-events:none;position:absolute;inset:0;height:100%;
+  -webkit-mask-image:radial-gradient(50% 50%,#000 58%,transparent 100%);
+  mask-image:radial-gradient(50% 50%,#000 58%,transparent 100%)}
+.hole-caption{text-align:center;font-size:var(--small);color:var(--mute);min-height:1.55em;margin:6px 0 0}
+.bh-readout{font-family:var(--mono);letter-spacing:-.01em}
+.bh-readout.is-live{color:var(--accent)}
+.gw{will-change:transform;display:inline-block}
+.gw-keep{white-space:nowrap}
+a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offset:3px}
 
 /* ---- meja (about) ---- */
 .desk-mat{position:relative;width:min(var(--wide),100vw - 2rem);margin-inline:auto;
   min-height:560px;border-radius:18px;background:
     radial-gradient(120% 80% at 50% 0%,#f4f3f1,#eceae6 70%);box-shadow:inset 0 0 0 1px var(--rule)}
-.desk-object{position:absolute;transform:rotate(var(--rot,0deg));transition:transform .25s ease}
-.desk-object:hover{transform:rotate(var(--rot,0deg)) translateY(-3px);z-index:3}
+.desk-object{position:absolute;touch-action:none;cursor:grab;user-select:none;transition:transform .25s ease;
+  transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg));will-change:transform}
+.desk-object:hover{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) translateY(-3px);z-index:3}
+.desk-object.dragging{cursor:grabbing;transition:none;z-index:41}
 .spec{position:absolute;left:0;top:calc(100% + 4px);white-space:nowrap;font-family:var(--mono);
   font-size:10px;color:var(--mute);opacity:0;transition:opacity .2s}
 .desk-object:hover .spec{opacity:1}
@@ -170,8 +184,8 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
   .site-foot{flex-direction:column;gap:6px}
   /* meja jadi aliran biasa di HP supaya tidak melebihi layar */
   .desk-mat{min-height:0;padding:16px;grid-template-columns:1fr 1fr;gap:12px;display:grid}
-  .desk-object{position:static;transform:none}
-  .desk-object:hover{transform:translateY(-2px)}
+  .desk-object{position:static;transform:translate(var(--dx,0px),var(--dy,0px))}
+  .desk-object:hover{transform:translate(var(--dx,0px),var(--dy,0px)) translateY(-2px)}
   .spec{position:static;opacity:1;white-space:normal;margin-top:3px}
   .chip{min-width:0}
 }

@@ -4,12 +4,23 @@ import Shelf from '../components/Shelf.astro';
 import Card from '../components/Card.astro';
 ---
 <Base title="Muhammad Maftuh" active="index">
-  <section class="wide hero-hole" aria-label="Animasi kanvas">
-    <canvas id="hero" width="560" height="347" aria-label="Titik-titik yang saling terhubung berputar pelan"></canvas>
-    <p class="hole-caption" id="hero-caption">jaringan · 128 titik</p>
+  <section class="wide hero-hole" aria-label="Lubang hitam">
+    <div
+      class="desk-object blackhole-object"
+      id="bh-object"
+      data-return
+      role="img"
+      aria-label="Lubang hitam. Arahkan kursor untuk menelusuri jejak sinar, seret ke bawah ke arah teks dan kata-katanya akan tertarik masuk; lepas, lubang hitamnya kembali sendiri."
+    >
+      <canvas class="bh-rays" id="bh-rays" aria-hidden="true"></canvas>
+      <canvas id="bh-canvas" width="560" height="347"></canvas>
+    </div>
+    <p class="hole-caption">
+      <span class="bh-readout" id="bh-readout" aria-live="polite" data-idle="SGR A*">SGR A*</span>
+    </p>
   </section>
 
-  <section class="block prose">
+  <section class="block prose" data-gravity>
     <p>
       Saya <strong style="color:var(--ink)">Muhammad Maftuh</strong>, mahasiswa dan pembangun perangkat
       lunak dari Bandung. Sekarang menjalankan <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a>,
@@ -21,8 +32,9 @@ import Card from '../components/Card.astro';
       <a class="link" href="/work">work</a>.
     </p>
     <p>
-      Temukan saya di <a class="link" href="https://github.com/Maftuuh1922">github</a>, atau tulis
-      langsung kalau ada yang mau didiskusikan.
+      Lubang hitam di atas boleh digeser — tarik ke sini, kata-katanya akan ikut masuk. Temukan saya di
+      <a class="link" href="https://github.com/Maftuuh1922">github</a>, atau tulis langsung kalau ada yang
+      mau didiskusikan.
     </p>
   </section>
 
@@ -92,75 +104,10 @@ import Card from '../components/Card.astro';
 
 <script>
   import { nalar, pagarnet, batik } from '../scripts/demos';
+  import { initBlackHole } from '../scripts/blackhole';
+
   nalar();
   pagarnet();
   batik();
-
-  /* kanvas hero: titik-titik yang saling terhubung, bereaksi ke kursor */
-  const cv = document.getElementById('hero') as HTMLCanvasElement | null;
-  const cap = document.getElementById('hero-caption');
-  if (cv) {
-    const ctx = cv.getContext('2d');
-    const W = cv.width;
-    const H = cv.height;
-    const N = 42;
-    const pts = Array.from({ length: N }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.35,
-      vy: (Math.random() - 0.5) * 0.35,
-    }));
-    let mx = -999;
-    let my = -999;
-    let edges = 0;
-    cv.addEventListener('pointermove', (e) => {
-      const r = cv.getBoundingClientRect();
-      mx = ((e.clientX - r.left) / r.width) * W;
-      my = ((e.clientY - r.top) / r.height) * H;
-    });
-    cv.addEventListener('pointerleave', () => {
-      mx = -999;
-      my = -999;
-    });
-    const frame = () => {
-      ctx.clearRect(0, 0, W, H);
-      edges = 0;
-      for (const p of pts) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0 || p.x > W) p.vx *= -1;
-        if (p.y < 0 || p.y > H) p.vy *= -1;
-        const dx = p.x - mx;
-        const dy = p.y - my;
-        const d = Math.hypot(dx, dy);
-        if (d < 90 && d > 0) {
-          p.x += (dx / d) * 1.4;
-          p.y += (dy / d) * 1.4;
-        }
-      }
-      ctx.lineWidth = 0.6;
-      for (let i = 0; i < N; i++) {
-        for (let j = i + 1; j < N; j++) {
-          const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
-          if (d < 78) {
-            edges += 1;
-            ctx.strokeStyle = `rgba(107,70,193,${(1 - d / 78) * 0.5})`;
-            ctx.beginPath();
-            ctx.moveTo(pts[i].x, pts[i].y);
-            ctx.lineTo(pts[j].x, pts[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-      for (const p of pts) {
-        ctx.fillStyle = '#121214';
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      if (cap) cap.textContent = 'jaringan · ' + N + ' titik · ' + edges + ' sisi';
-      requestAnimationFrame(frame);
-    };
-    frame();
-  }
+  initBlackHole();
 </script>
