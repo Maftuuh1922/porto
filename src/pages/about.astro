@@ -1,14 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
 
-/* benda di "meja" — alat yang benar-benar saya pakai, posisinya miring seperti halaman about yuvich */
+/* benda di "meja" — alat & tanda yang benar-benar saya pakai, miring seperti halaman about yuvich.
+   tiap benda punya logo sesuai judulnya dan bisa digeser */
 const objects = [
-  { left: '2%', top: '10px', rot: '-4deg', title: 'Next.js · TypeScript', spec: 'NeovarchLabs · situs produksi + invoice PDF', id: 'o1' },
-  { left: '54%', top: '0px', rot: '7deg', title: 'Flutter · Dart', spec: 'aplikasi_berita, sales-management, Tunein', id: 'o2' },
-  { left: '6%', top: '190px', rot: '5deg', title: 'Python · FastAPI', spec: 'Nalar.ai-be · indeks & RAG, 1.204 dokumen', id: 'o3' },
-  { left: '58%', top: '210px', rot: '-9deg', title: 'Linux VPS', spec: 'bot Telegram, gateway 9router, cron', id: 'o4' },
-  { left: '30%', top: '350px', rot: '12deg', title: 'Astro · Tailwind', spec: 'situs yang sedang Anda baca ini', id: 'o5' },
-  { left: '62%', top: '400px', rot: '-14deg', title: 'SQLite · Turso', spec: 'basis data NeovarchLabs', id: 'o6' },
+  { left: '4%', top: '8px', rot: '-5deg', logo: '/logos/hermes.png', title: 'Hermes', sub: 'agen AI',
+    spec: 'otomasi harian · bot Telegram · cron', id: 'o1' },
+  { left: '37%', top: '0px', rot: '4deg', logo: '/logos/nextdotjs.svg', title: 'Next.js', sub: 'TypeScript',
+    spec: 'NeovarchLabs · situs produksi + invoice PDF', id: 'o2' },
+  { left: '69%', top: '26px', rot: '-7deg', logo: '/logos/9router.svg', title: '9router', sub: 'gateway LLM',
+    spec: 'gabung 1.500+ model dari belasan penyedia', id: 'o3' },
+  { left: '5%', top: '172px', rot: '6deg', logo: '/logos/github.svg', title: 'GitHub', sub: 'Maftuuh1922',
+    spec: '48 repositori publik · 10 followers', id: 'o4' },
+  { left: '38%', top: '178px', rot: '-4deg', logo: '/logos/flutter.svg', title: 'Flutter', sub: 'Dart',
+    spec: 'aplikasi_berita, sales-management, Tunein', id: 'o5' },
+  { left: '70%', top: '196px', rot: '8deg', logo: '/logos/python.svg', title: 'Python', sub: 'FastAPI',
+    spec: 'Nalar.ai-be · indeks & RAG, 1.204 dokumen', id: 'o6' },
+  { left: '6%', top: '336px', rot: '-6deg', logo: '/logos/linux.svg', title: 'Linux', sub: 'VPS',
+    spec: 'bot Telegram, gateway 9router, cron', id: 'o7' },
+  { left: '40%', top: '348px', rot: '5deg', logo: '/logos/astro.svg', title: 'Astro', sub: 'Tailwind',
+    spec: 'situs yang sedang Anda baca ini', id: 'o8' },
+  { left: '71%', top: '360px', rot: '-10deg', logo: '/logos/sqlite.svg', title: 'SQLite', sub: 'Turso',
+    spec: 'basis data NeovarchLabs', id: 'o9' },
 ];
 ---
 <Base title="About · Muhammad Maftuh" active="about">
@@ -18,8 +31,11 @@ const objects = [
         objects.map((o) => (
           <div class="desk-object" id={o.id} style={`left:${o.left};top:${o.top};--rot:${o.rot};`}>
             <div class="chip">
-              <b>{o.title}</b>
-              <span>aktif dipakai</span>
+              <img class="chip-logo" src={o.logo} alt="" width="20" height="20" loading="lazy" />
+              <span class="chip-txt">
+                <b>{o.title}</b>
+                <span class="chip-sub">{o.sub}</span>
+              </span>
             </div>
             <span class="spec">{o.spec}</span>
           </div>

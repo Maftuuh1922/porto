@@ -167,12 +167,16 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
   transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg));will-change:transform}
 .desk-object:hover{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) translateY(-3px);z-index:3}
 .desk-object.dragging{cursor:grabbing;transition:none;z-index:41}
-.spec{position:absolute;left:0;top:calc(100% + 4px);white-space:nowrap;font-family:var(--mono);
-  font-size:10px;color:var(--mute);opacity:0;transition:opacity .2s}
-.desk-object:hover .spec{opacity:1}
-.chip{background:#fff;border-radius:12px;box-shadow:var(--lift);padding:10px 12px;
-  font-family:var(--mono);font-size:11px;color:#3d3c44;display:grid;gap:4px;min-width:150px}
-.chip b{font:600 12px var(--sans);color:var(--ink)}
+.spec{position:absolute;left:50%;top:calc(100% + 7px);transform:translateX(-50%);white-space:nowrap;
+  font-family:var(--mono);font-size:10px;color:var(--mute);opacity:0;transition:opacity .2s;pointer-events:none}
+.desk-object:hover .spec,.desk-object.dragging .spec,.desk-object.just-dropped .spec{opacity:1}
+.desk-object.just-dropped .spec{transition-delay:.55s}
+.chip{background:#fff;border-radius:12px;box-shadow:var(--lift);padding:9px 11px;
+  font-family:var(--mono);font-size:11px;color:#3d3c44;display:flex;align-items:center;gap:9px;min-width:0}
+.chip-logo{width:20px;height:20px;flex:none;object-fit:contain;display:block}
+.chip-txt{display:grid;gap:1px;line-height:1.25;min-width:0}
+.chip b{font:600 12px var(--sans);color:var(--ink);white-space:nowrap}
+.chip .chip-sub{font-family:var(--mono);font-size:10px;color:var(--mute);white-space:nowrap}
 
 /* ---- footer ---- */
 .site-foot{width:min(var(--col),100% - 2rem);font-size:var(--small);color:var(--mute);
