@@ -1,0 +1,13 @@
+---
+const { name, href, desc, note } = Astro.props;
+---
+<figure class="card">
+  <div class="card-face" role="group">
+    <slot />
+    <p class="card-note">{note}</p>
+  </div>
+  <figcaption class="card-cap">
+    <a class="card-name" href={href}>{name}</a>
+    <span class="card-desc">{desc}</span>
+  </figcaption>
+</figure>

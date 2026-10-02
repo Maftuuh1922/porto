@@ -1,0 +1,166 @@
+---
+import Base from '../layouts/Base.astro';
+import Shelf from '../components/Shelf.astro';
+import Card from '../components/Card.astro';
+---
+<Base title="Muhammad Maftuh" active="index">
+  <section class="wide hero-hole" aria-label="Animasi kanvas">
+    <canvas id="hero" width="560" height="347" aria-label="Titik-titik yang saling terhubung berputar pelan"></canvas>
+    <p class="hole-caption" id="hero-caption">jaringan · 128 titik</p>
+  </section>
+
+  <section class="block prose">
+    <p>
+      Saya <strong style="color:var(--ink)">Muhammad Maftuh</strong>, mahasiswa dan pembangun perangkat
+      lunak dari Bandung. Sekarang menjalankan <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a>,
+      studio kecil untuk situs dan sistem tagihan, serta merawat beberapa proyek sumber terbuka sendiri.
+    </p>
+    <p>
+      Saya suka mengerjakan hal yang bisa dicoba langsung: asisten AI yang menjawab dengan sitasi,
+      ekstensi yang memblokir halaman berjudi, pengklasifikasi batik. Semuanya ada di halaman
+      <a class="link" href="/work">work</a>.
+    </p>
+    <p>
+      Temukan saya di <a class="link" href="https://github.com/Maftuuh1922">github</a>, atau tulis
+      langsung kalau ada yang mau didiskusikan.
+    </p>
+  </section>
+
+  <Shelf label="Yang sedang saya kerjakan" caption="Sedang dikerjakan">
+    <Card
+      name="NeovarchLabs"
+      href="https://www.neovarchlabs.web.id"
+      desc="situs agensi + tagihan QRIS · Next.js"
+      note="produksi · neovarchlabs.web.id"
+    >
+      <div class="qris">
+        <div style="font-size:9.5px;color:var(--mute)">STATUS · PRODUKSI</div>
+        <div class="qr"></div>
+        <div>QRIS dinamis</div>
+        <div class="paid" style="margin-top:5px">● pelanggan · notifikasi Telegram</div>
+      </div>
+    </Card>
+
+    <Card
+      name="Nalar.Ai"
+      href="https://github.com/Maftuuh1922/Nalar.Ai"
+      desc="asisten AI edukasi · RAG · TypeScript"
+      note="RAG · 4 dokumen dirujuk"
+    >
+      <div class="window" style="background:#14131a">
+        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">Nalar.Ai — RAG</span></div>
+        <div class="term" id="nalar-term"></div>
+      </div>
+    </Card>
+
+    <Card
+      name="Pagarnet"
+      href="https://github.com/Maftuuh1922/Pagarnet"
+      desc="ekstensi anti-judol · HTML, JS"
+      note="blokir real-time · tanpa izin tambahan"
+    >
+      <div class="block-ui">
+        <div class="row" style="align-items:flex-end">
+          <div>
+            <div class="big" id="pg-count">0</div>
+            <div style="font-size:10px;color:var(--mute)">domain judi diblokir</div>
+          </div>
+          <div style="font-size:10px;color:#2f9155">● aktif</div>
+        </div>
+        <div style="margin-top:8px" id="pg-tags"></div>
+      </div>
+    </Card>
+
+    <Card
+      name="BatikLens"
+      href="https://github.com/Maftuuh1922/batiklens-ai-powered-heritage-explorer"
+      desc="eksplorasi batik bertenaga AI · TS"
+      note="memindai pola…"
+    >
+      <div class="klass">
+        <div class="scan"></div>
+        <div class="row"><span>parang</span><b id="b1">0%</b></div>
+        <div class="bar"><i id="r1"></i></div>
+        <div class="row"><span>kawung</span><b id="b2">0%</b></div>
+        <div class="bar"><i id="r2"></i></div>
+        <div class="row"><span>mega mendung</span><b id="b3">0%</b></div>
+        <div class="bar"><i id="r3"></i></div>
+      </div>
+    </Card>
+  </Shelf>
+</Base>
+
+<script>
+  import { nalar, pagarnet, batik } from '../scripts/demos';
+  nalar();
+  pagarnet();
+  batik();
+
+  /* kanvas hero: titik-titik yang saling terhubung, bereaksi ke kursor */
+  const cv = document.getElementById('hero') as HTMLCanvasElement | null;
+  const cap = document.getElementById('hero-caption');
+  if (cv) {
+    const ctx = cv.getContext('2d');
+    const W = cv.width;
+    const H = cv.height;
+    const N = 42;
+    const pts = Array.from({ length: N }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: (Math.random() - 0.5) * 0.35,
+    }));
+    let mx = -999;
+    let my = -999;
+    let edges = 0;
+    cv.addEventListener('pointermove', (e) => {
+      const r = cv.getBoundingClientRect();
+      mx = ((e.clientX - r.left) / r.width) * W;
+      my = ((e.clientY - r.top) / r.height) * H;
+    });
+    cv.addEventListener('pointerleave', () => {
+      mx = -999;
+      my = -999;
+    });
+    const frame = () => {
+      ctx.clearRect(0, 0, W, H);
+      edges = 0;
+      for (const p of pts) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        const dx = p.x - mx;
+        const dy = p.y - my;
+        const d = Math.hypot(dx, dy);
+        if (d < 90 && d > 0) {
+          p.x += (dx / d) * 1.4;
+          p.y += (dy / d) * 1.4;
+        }
+      }
+      ctx.lineWidth = 0.6;
+      for (let i = 0; i < N; i++) {
+        for (let j = i + 1; j < N; j++) {
+          const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+          if (d < 78) {
+            edges += 1;
+            ctx.strokeStyle = `rgba(107,70,193,${(1 - d / 78) * 0.5})`;
+            ctx.beginPath();
+            ctx.moveTo(pts[i].x, pts[i].y);
+            ctx.lineTo(pts[j].x, pts[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      for (const p of pts) {
+        ctx.fillStyle = '#121214';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (cap) cap.textContent = 'jaringan · ' + N + ' titik · ' + edges + ' sisi';
+      requestAnimationFrame(frame);
+    };
+    frame();
+  }
+</script>

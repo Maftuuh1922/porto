@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+
+/* benda di "meja" — alat yang benar-benar saya pakai, posisinya miring seperti halaman about yuvich */
+const objects = [
+  { left: '2%', top: '10px', rot: '-4deg', title: 'Next.js · TypeScript', spec: 'NeovarchLabs · situs produksi + invoice PDF', id: 'o1' },
+  { left: '54%', top: '0px', rot: '7deg', title: 'Flutter · Dart', spec: 'aplikasi_berita, sales-management, Tunein', id: 'o2' },
+  { left: '6%', top: '190px', rot: '5deg', title: 'Python · FastAPI', spec: 'Nalar.ai-be · indeks & RAG, 1.204 dokumen', id: 'o3' },
+  { left: '58%', top: '210px', rot: '-9deg', title: 'Linux VPS', spec: 'bot Telegram, gateway 9router, cron', id: 'o4' },
+  { left: '30%', top: '350px', rot: '12deg', title: 'Astro · Tailwind', spec: 'situs yang sedang Anda baca ini', id: 'o5' },
+  { left: '62%', top: '400px', rot: '-14deg', title: 'SQLite · Turso', spec: 'basis data NeovarchLabs', id: 'o6' },
+];
+---
+<Base title="About · Muhammad Maftuh" active="about">
+  <section class="wide" aria-label="Alat kerja saya">
+    <div class="desk-mat">
+      {
+        objects.map((o) => (
+          <div class="desk-object" id={o.id} style={`left:${o.left};top:${o.top};--rot:${o.rot};`}>
+            <div class="chip">
+              <b>{o.title}</b>
+              <span>aktif dipakai</span>
+            </div>
+            <span class="spec">{o.spec}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="block prose">
+    <p>
+      Saya <strong style="color:var(--ink)">Muhammad Maftuh</strong>, mahasiswa yang menghabiskan
+      waktu di antara kuliah, menulis kode, dan merawat layanan kecil yang dipakai orang lain.
+    </p>
+    <p>
+      Saya bekerja paling nyaman di dekat data dan infrastruktur: API, basis data, otomasi, dan
+      sedikit perkakas AI. Di <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a>
+      saya menangani semuanya sendiri — dari desain sampai peluncuran.
+    </p>
+    <p>
+      Karya yang bisa dicoba ada di halaman <a class="link" href="/work">work</a>, dan catatan
+      terbaru di <a class="link" href="/now">now</a>.
+    </p>
+    <p>
+      Ada yang ingin didiskusikan? Sapa saya di
+      <a class="link" href="https://github.com/Maftuuh1922">github.com/Maftuuh1922</a>.
+    </p>
+  </section>
+</Base>

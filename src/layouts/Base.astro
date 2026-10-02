@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+
+const { title = 'Muhammad Maftuh', active = 'index' } = Astro.props;
+
+// garis bawah bergelombang, panjangnya beda tiap label (persis gaya yuvich)
+const links = [
+  { id: 'index', href: '/', label: 'Index',
+    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 2.56 5.50 0 q2.75 -1.87 5.50 0 q2.75 1.78 5.50 0 q2.75 -2.35 5.50 0 q2.75 2.14 5.50 0 q1.73 -1.91 3.47 0',
+    w: 38.46875 },
+  { id: 'about', href: '/about', label: 'About',
+    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 2.24 5.50 0 q2.75 -1.67 5.50 0 q2.75 1.74 5.50 0 q2.75 -2.27 5.50 0 q2.75 1.97 5.50 0 q1.60 -2.19 3.20 0',
+    w: 43.703125 },
+  { id: 'work', href: '/work', label: 'Work',
+    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 1.92 5.50 0 q2.75 -2.58 5.50 0 q2.75 1.70 5.50 0 q2.75 -2.19 5.50 0 q2.75 1.80 5.50 0 q1.57 -2.16 3.14 0',
+    w: 38.140625 },
+  { id: 'now', href: '/now', label: 'Now',
+    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 1.61 5.50 0 q2.75 -2.38 5.50 0 q2.75 1.66 5.50 0 q2.75 -2.11 5.50 0 q0.93 1.63 1.86 0',
+    w: 31.359375 },
+];
+---
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content="Muhammad Maftuh — mahasiswa dan pembangun perangkat lunak dari Bandung. Nalar.Ai, Pagarnet, BatikLens, NeovarchLabs." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&family=Fragment+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🛠</text></svg>" />
+  </head>
+  <body>
+    <header>
+      <nav class="site-nav" aria-label="Pages">
+        {
+          links.map((l) => (
+            <a href={l.href} aria-current={l.id === active ? 'page' : undefined}>
+              {l.label}
+              <svg class="squiggle" aria-hidden="true" height="7" width={l.w} viewBox={`0 0 ${l.w} 7`}>
+                <path pathLength="1" d={l.d} />
+              </svg>
+            </a>
+          ))
+        }
+      </nav>
+    </header>
+
+    <main class="page">
+      <slot />
+    </main>
+
+    <footer class="site-foot">
+      <span>salam kenal</span>
+      <span class="ticker" id="clock" data-live="1">Bandung, Indonesia</span>
+    </footer>
+
+    <script>
+      const el = document.getElementById('clock');
+      const tick = () => {
+        if (!el) return;
+        const t = new Date().toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false });
+        el.textContent = 'Bandung, Indonesia · ' + t + ' WIB';
+      };
+      tick();
+      setInterval(tick, 1000);
+    </script>
+  </body>
+</html>

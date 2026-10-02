@@ -1,0 +1,47 @@
+---
+// Rak horizontal + panah ‹ › — perilaku sama seperti yuvich
+const { label, caption } = Astro.props;
+---
+<section class="block">
+  {caption && <p class="label">{caption}</p>}
+  <div class="shelf" data-shelf>
+    <div class="shelf-track" role="region" aria-label={label} tabindex="0">
+      <slot />
+    </div>
+    <div class="shelf-nav">
+      <button class="shelf-btn" type="button" data-dir="-1" aria-label="Sebelumnya">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"
+          ><path d="M8.5 3 4.5 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"></path></svg
+        >
+      </button>
+      <button class="shelf-btn" type="button" data-dir="1" aria-label="Berikutnya">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"
+          ><path d="M5.5 3 9.5 7l-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"></path></svg
+        >
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('[data-shelf]').forEach((shelf) => {
+    const track = shelf.querySelector('.shelf-track') as HTMLElement;
+    const btns = shelf.querySelectorAll<HTMLButtonElement>('.shelf-btn');
+    const nav = shelf.querySelector('.shelf-nav') as HTMLElement;
+    const step = () => (track.querySelector('.card') as HTMLElement).getBoundingClientRect().width + 16;
+    btns.forEach((b) => b.addEventListener('click', () =>
+      track.scrollBy({ left: Number(b.dataset.dir) * step(), behavior: 'smooth' })));
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth - 2;
+      btns[0].disabled = track.scrollLeft <= 2;
+      btns[1].disabled = track.scrollLeft >= max;
+      if (max <= 0) nav.style.display = 'none';
+    };
+    track.addEventListener('scroll', sync, { passive: true });
+    addEventListener('resize', sync);
+    setTimeout(sync, 60);
+    sync();
+  });
+</script>

@@ -1,0 +1,183 @@
+---
+import Base from '../layouts/Base.astro';
+import Shelf from '../components/Shelf.astro';
+import Card from '../components/Card.astro';
+---
+<Base title="Work · Muhammad Maftuh" active="work">
+  <section class="prose">
+    <p>
+      Beberapa yang saya bangun — tiap kartu punya demo yang benar-benar berjalan di dalamnya, bisa
+      diklik. Repositori dan tumpukan teknologi saya ada di bawah.
+    </p>
+  </section>
+
+  <Shelf label="Karya" caption="Karya pilihan">
+    <Card
+      name="Nalar.Ai"
+      href="https://github.com/Maftuuh1922/Nalar.Ai"
+      desc="asisten AI edukasi · RAG &amp; analisis dokumen · TypeScript"
+      note="RAG · 4 dokumen dirujuk"
+    >
+      <div class="window" style="background:#14131a">
+        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">Nalar.Ai — RAG</span></div>
+        <div class="term" id="nalar-term"></div>
+      </div>
+    </Card>
+
+    <Card
+      name="Pagarnet"
+      href="https://github.com/Maftuuh1922/Pagarnet"
+      desc="ekstensi anti-judol · HTML, JS"
+      note="blokir real-time · tanpa izin tambahan"
+    >
+      <div class="block-ui">
+        <div class="row" style="align-items:flex-end">
+          <div>
+            <div class="big" id="pg-count">0</div>
+            <div style="font-size:10px;color:var(--mute)">domain judi diblokir</div>
+          </div>
+          <div style="font-size:10px;color:#2f9155">● aktif</div>
+        </div>
+        <div style="margin-top:8px" id="pg-tags"></div>
+      </div>
+    </Card>
+
+    <Card
+      name="BatikLens"
+      href="https://github.com/Maftuuh1922/batiklens-ai-powered-heritage-explorer"
+      desc="eksplorasi batik bertenaga AI · TypeScript"
+      note="memindai pola…"
+    >
+      <div class="klass">
+        <div class="scan"></div>
+        <div class="row"><span>parang</span><b id="b1">0%</b></div>
+        <div class="bar"><i id="r1"></i></div>
+        <div class="row"><span>kawung</span><b id="b2">0%</b></div>
+        <div class="bar"><i id="r2"></i></div>
+        <div class="row"><span>mega mendung</span><b id="b3">0%</b></div>
+        <div class="bar"><i id="r3"></i></div>
+      </div>
+    </Card>
+
+    <Card
+      name="NeovarchLabs"
+      href="https://www.neovarchlabs.web.id"
+      desc="situs agensi + tagihan QRIS · Next.js"
+      note="PDF invoice dibuat di sisi server"
+    >
+      <div class="qris">
+        <div style="font-size:9.5px;color:var(--mute)">INVOICE · NVL-0142</div>
+        <div class="qr"></div>
+        <div>Rp 1.750.000</div>
+        <div class="paid" style="margin-top:5px">✓ LUNAS via QRIS</div>
+      </div>
+    </Card>
+
+    <Card
+      name="fotobooth"
+      href="https://github.com/Maftuuh1922/fotobooth"
+      desc="strip foto otomatis · Python"
+      note="pose 1/4 · kilat!"
+    >
+      <div class="strip" id="strip">
+        <div class="ph"></div><div class="ph"></div><div class="ph"></div><div class="ph"></div>
+      </div>
+    </Card>
+
+    <Card
+      name="aplikasi_berita"
+      href="https://github.com/Maftuuh1922/aplikasi_berita"
+      desc="klien berita · Dart"
+      note="gulir otomatis · Flutter"
+    >
+      <div class="feed"><ul id="feed"></ul></div>
+    </Card>
+
+    <Card
+      name="sales-management"
+      href="https://github.com/Maftuuh1922/sales-management"
+      desc="manajemen penjualan · Dart"
+      note="omzet minggu ini"
+    >
+      <div class="chart" id="chart">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        <div class="y"><span>sen</span><span>sel</span><span>rab</span><span>kam</span><span>jum</span><span>sab</span><span>min</span></div>
+      </div>
+    </Card>
+  </Shelf>
+
+  <Shelf label="GitHub" caption="Di GitHub">
+    <Card
+      name="Profil GitHub"
+      href="https://github.com/Maftuuh1922?tab=repositories"
+      desc="Maftuuh1922 · 10 followers"
+      note="sejak 22 September 2023"
+    >
+      <div class="sheet">
+        <h4>48 repositori publik</h4>
+        <div class="row"><span>TypeScript</span><b>15</b></div><div class="bar"><i class="lang" data-v="100"></i></div>
+        <div class="row"><span>JavaScript</span><b>7</b></div><div class="bar"><i class="lang" data-v="47"></i></div>
+        <div class="row"><span>Dart</span><b>5</b></div><div class="bar"><i class="lang" data-v="33"></i></div>
+        <div class="row"><span>Python</span><b>4</b></div><div class="bar"><i class="lang" data-v="27"></i></div>
+        <div class="row"><span>PHP · HTML · C++</span><b>7</b></div><div class="bar"><i class="lang" data-v="40"></i></div>
+      </div>
+    </Card>
+
+    <Card
+      name="Maftuuh1922"
+      href="https://github.com/Maftuuh1922/Maftuuh1922"
+      desc="statistik profil otomatis · Python"
+      note="README profil · Python"
+    >
+      <div class="window" style="background:#0f1117;width:82%">
+        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">maftuuh1922 — zsh</span></div>
+        <div class="term" id="readme-term"></div>
+      </div>
+    </Card>
+
+    <Card
+      name="Nalar.ai-be"
+      href="https://github.com/Maftuuh1922/Nalar.ai-be"
+      desc="API RAG &amp; indeks dokumen · Python"
+      note="GET /health 200"
+    >
+      <div class="window" style="background:#101418">
+        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">nalar.ai-be — uvicorn</span></div>
+        <div class="term" id="be-term"></div>
+      </div>
+    </Card>
+
+    <Card
+      name="plantcare-ai"
+      href="https://github.com/Maftuuh1922/plantcare-ai-intelligent-plant-disease-detection"
+      desc="deteksi penyakit tanaman · TS"
+      note="deteksi penyakit tanaman"
+    >
+      <div class="sheet">
+        <h4>diagnosis daun</h4>
+        <div class="row"><span>penyakit</span><b>early blight</b></div>
+        <div class="row"><span>keyakinan</span><b>94,2%</b></div>
+        <div class="bar"><i class="lang" data-v="94"></i></div>
+        <div class="row"><span>kelas</span><b>12 tersedia</b></div>
+        <div class="row" style="margin-top:6px"><span>latih</span><b>ResNet-50</b></div>
+      </div>
+    </Card>
+
+    <Card
+      name="communicate-using-markdown"
+      href="https://github.com/Maftuuh1922/skills-communicate-using-markdown"
+      desc="panduan komunikasi tertulis"
+      note="#markdown · gaya tulis teknis"
+    >
+      <div class="window" style="background:#1b1b20">
+        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">README.md</span></div>
+        <div class="term" id="md-term"></div>
+      </div>
+    </Card>
+  </Shelf>
+</Base>
+
+<script>
+  import { startWorkDemos } from '../scripts/demos';
+  startWorkDemos();
+</script>
