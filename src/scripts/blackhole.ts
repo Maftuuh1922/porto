@@ -98,7 +98,7 @@ export function initBlackHole(): void {
     const r = obj.getBoundingClientRect();
     W = Math.max(240, r.width);
     H = Math.max(150, r.height || (W * 347) / 560);
-    dpr = Math.min(devicePixelRatio || 1, 2) * 1.25;
+    dpr = Math.min(devicePixelRatio || 1, 2); // dulu dikali 1,25 → piksel 56% lebih banyak, padahal hasilnya tak terlihat
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     if (rayCanvas) {
@@ -112,195 +112,237 @@ export function initBlackHole(): void {
     drawRays(null);
   };
 
-  /* ---------- piringan akresi ---------- */
+  /* ---------- piringan akresi ----------
+     Versi lama:30 cincin garis putus-putus → kelihatan seperti grid/diagram datar.
+     Versi baru: potongan busur pendek dengan turbulensi acak + penerangan Doppler,
+     jadi seperti piringan plasma yang benar-benar berputar. */
   const Ri = () => Rs * 1.75;
   const Ro = () => Rs * 4.6;
-  let dashes: number[][] = [];
+  const SEG = 9;
+  const phases: number[] = [];
   const buildDisk = () => {
-    dashes = [];
-    for (let i = 0; i < 30; i++) {
-      const pat: number[] = [];
-      let s = i * 7.7 + 3.1;
-      for (let k = 0; k < 8; k++) {
-        s = (s * 9301 + 49297) % 233280;
-        pat.push(9 + (s / 233280) * 46);
-      }
-      dashes.push(pat);
+    phases.length = 0;
+    let s = 7919;
+    for (let i = 0; i < 48; i++) {
+      s = (s * 9301 + 49297) % 233280;
+      phases.push((s / 233280) * TAU);
     }
   };
 
   const ROLL = -0.13; // miring piringan
   const KY = 0.2; // apitan elips (dilihat hampir dari pinggir)
 
-  const ring = (r: number, alpha: number, front: boolean, glow: number, dashPhase: number, dash: number[]) => {
-    const rx = r;
-    const ry = r * KY;
+  /* satu setengah piringan (depan/belakang) — dipanggil dua kali per frame.
+     Disatkan per ember alfa biar cuma ~140 goresan, bukan 500+ (kanvas tanpa GPU
+     di mesin ini jalan 7 fps kalau satu-satu). */
+  const diskHalf = (t: number, front: boolean) => {
+    const inner = Ri();
+    const outer = Ro();
+    const N = 14;
+    const span = TAU / SEG;
+    const BUCKET = [0.07, 0.18, 0.34];
+    const segs: number[][] = [[], [], []];
     ctx.save();
     ctx.translate(W / 2, H / 2);
     ctx.rotate(ROLL);
     ctx.globalCompositeOperation = 'lighter';
-    ctx.lineWidth = glow;
-    ctx.setLineDash(dash);
-    ctx.lineDashOffset = -dashPhase;
-    const a0 = front ? 0 : Math.PI;
-    const a1 = front ? Math.PI : TAU;
-    // Doppler: sisi yang mendekat lebih terang
-    const g = ctx.createLinearGradient(-rx, 0, rx, 0);
-    const inner = 1 - (r - Ri()) / (Ro() - Ri());
-    g.addColorStop(0, `rgba(228,240,255,${alpha})`);
-    g.addColorStop(0.45, `rgba(150,204,255,${alpha * 0.72})`);
-    g.addColorStop(1, `rgba(56,104,214,${alpha * 0.3 * inner + 0.05})`);
+    ctx.lineCap = 'round';
+    const g = ctx.createLinearGradient(-outer, 0, outer, 0);
+    g.addColorStop(0, 'rgba(238,247,255,1)');
+    g.addColorStop(0.4, 'rgba(150,204,255,0.72)');
+    g.addColorStop(1, 'rgba(52,96,206,0.34)');
     ctx.strokeStyle = g;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, rx, ry, 0, a0, a1);
-    ctx.stroke();
+    for (let i = 0; i < N; i++) {
+      const f = i / (N - 1);
+      const r = inner + (outer - inner) * Math.pow(f, 1.4);
+      const fall = Math.pow(1 - f, 1.55);
+      const kep = Math.pow(inner / r, 1.5); // rotasi diferensial (Kepler)
+      const drift = t * kep * 0.8 + phases[i];
+      const base = (0.05 + 0.4 * fall) * (front ? 1.2 : 0.7);
+      for (const b of segs) b.length = 0;
+      for (let k = 0; k < SEG; k++) {
+        const a0 = k * span + drift;
+        const mid = a0 + span * 0.5;
+        if ((Math.sin(mid) > 0) !== front) continue;
+        const dop = 0.42 + 0.58 * (0.5 - 0.5 * Math.cos(mid)); // sisi mendekat lebih terang
+        const turb = 0.7 + 0.3 * Math.sin(mid * 3 + t * 1.7 + phases[i]);
+        const a = base * dop * turb;
+        let b = 0;
+        while (b < 2 && a > BUCKET[b]) b++;
+        segs[b].push(a0);
+      }
+      ctx.lineWidth = Math.max(2, ((outer - inner) / N) * 1.9);
+      for (let b = 0; b < 3; b++) {
+        const list = segs[b];
+        if (!list.length) continue;
+        ctx.globalAlpha = BUCKET[b];
+        ctx.beginPath();
+        for (const a0 of list) ctx.ellipse(0, 0, r, r * KY, 0, a0, a0 + span * 1.06);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
     ctx.restore();
   };
 
   const drawHole = (t: number) => {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
-    const n = 30;
+    const cx = W / 2;
+    const cy = H / 2;
     const inner = Ri();
-    const outer = Ro();
 
-    // setengah belakang (melewati di balik lubang)
-    for (let i = 0; i < n; i++) {
-      const f = i / (n - 1);
-      const r = inner + (outer - inner) * Math.pow(f, 1.35);
-      const fall = Math.pow(1 - f, 1.4);
-      const alpha = 0.05 + 0.34 * fall;
-      const kep = Math.pow(inner / r, 1.5);
-      ring(r, alpha, false, ((outer - inner) / n) * 1.5, t * kep * 170, dashes[i]);
-    }
+    // piringan: setengah belakang (lewat di balik bola)
+    diskHalf(t, false);
 
-    // pancaran pulsar di kedua sumbu rotasi — tanda bintang ini berputar cepat
+    /* pancaran pulsar di kedua sumbu rotasi — kabut lebar + inti sempit,
+       berkedip pelan dan sedikit berayun supaya tidak kaku */
     ctx.save();
-    ctx.translate(W / 2, H / 2);
-    ctx.rotate(ROLL + Math.PI / 2 + Math.sin(t * 0.35) * 0.05);
+    ctx.translate(cx, cy);
+    ctx.rotate(ROLL + Math.PI / 2 + Math.sin(t * 0.35) * 0.05 + Math.sin(t * 1.1) * 0.018);
     ctx.globalCompositeOperation = 'lighter';
-    const beamLen = Rs * 3.2;
-    for (const dir of [1, -1]) {
-      const bg = ctx.createLinearGradient(0, 0, 0, dir * beamLen);
-      bg.addColorStop(0, 'rgba(232,242,255,0.5)');
-      bg.addColorStop(0.35, 'rgba(150,192,255,0.18)');
-      bg.addColorStop(1, 'rgba(90,130,255,0)');
-      ctx.fillStyle = bg;
+    const beamLen = Rs * 3.5;
+    const flick = 0.86 + 0.14 * Math.sin(t * 4.7) * Math.sin(t * 1.9 + 1.2);
+    const quad = (w0: number, w1: number, dir: number, len: number) => {
       ctx.beginPath();
-      ctx.moveTo(-Rs * 0.17, 0);
-      ctx.lineTo(Rs * 0.17, 0);
-      ctx.lineTo(Rs * 0.66, dir * beamLen);
-      ctx.lineTo(-Rs * 0.66, dir * beamLen);
+      ctx.moveTo(-w0, 0);
+      ctx.lineTo(w0, 0);
+      ctx.lineTo(w1, dir * len);
+      ctx.lineTo(-w1, dir * len);
       ctx.closePath();
       ctx.fill();
+    };
+    for (const dir of [1, -1]) {
+      /* tanpa ctx.filter — filter blur di kanvas itu sangat mahal (fps anjlok ke 2).
+         Kelembutan dibuat dari beberapa lapis quad makin sempit + makin terang. */
+      const layers: [number, number, number][] = [
+        [0.4, 1.0, 0.18],
+        [0.22, 0.62, 0.3],
+        [0.07, 0.26, 0.6],
+      ];
+      for (const [wOut, lenF, a] of layers) {
+        const mist = ctx.createLinearGradient(0, 0, 0, dir * beamLen * lenF);
+        mist.addColorStop(0, `rgba(232,242,255,${a * flick})`);
+        mist.addColorStop(0.4, `rgba(150,194,255,${a * 0.5 * flick})`);
+        mist.addColorStop(1, 'rgba(86,126,255,0)');
+        ctx.fillStyle = mist;
+        quad(Rs * 0.07, Rs * wOut, dir, beamLen * lenF);
+      }
     }
     ctx.restore();
 
-    // pendar bintang neutron (denyut pelan)
+    // pendar bintang neutron (denyut pelan + kedip kecil)
     ctx.globalCompositeOperation = 'lighter';
-    const pulse = 0.85 + 0.15 * Math.sin(t * 2.1);
-    const bloom = ctx.createRadialGradient(W / 2, H / 2, Rs * 0.55, W / 2, H / 2, Rs * 3.3);
-    bloom.addColorStop(0, `rgba(224,238,255,${0.6 * pulse})`);
-    bloom.addColorStop(0.3, `rgba(146,182,255,${0.22 * pulse})`);
+    const pulse = 0.86 + 0.14 * Math.sin(t * 2.1) + 0.05 * Math.sin(t * 5.7);
+    const bloom = ctx.createRadialGradient(cx, cy, Rs * 0.6, cx, cy, Rs * 3.4);
+    bloom.addColorStop(0, `rgba(226,240,255,${0.58 * pulse})`);
+    bloom.addColorStop(0.26, `rgba(150,186,255,${0.2 * pulse})`);
+    bloom.addColorStop(0.62, `rgba(96,134,246,${0.07 * pulse})`);
     bloom.addColorStop(1, 'rgba(70,104,220,0)');
     ctx.fillStyle = bloom;
     ctx.beginPath();
-    ctx.arc(W / 2, H / 2, Rs * 3.3, 0, TAU);
+    ctx.arc(cx, cy, Rs * 3.4, 0, TAU);
     ctx.fill();
 
-    // halo pelensaan — cahaya di sekitar bintang yang dibengkokkan
-    for (let k = 0; k < 3; k++) {
-      ctx.beginPath();
-      ctx.strokeStyle = `rgba(150,186,255,${0.3 - k * 0.08})`;
-      ctx.lineWidth = Rs * 0.16;
-      ctx.arc(W / 2, H / 2, Rs * (1.14 + k * 0.2), Math.PI, TAU);
-      ctx.stroke();
-    }
+    // atmosfer di sekeliling bola — gradasi lembut, bukan tiga cincin keras
+    const halo = ctx.createRadialGradient(cx, cy, Rs * 0.98, cx, cy, Rs * 1.9);
+    halo.addColorStop(0, 'rgba(216,233,255,0.52)');
+    halo.addColorStop(0.3, 'rgba(150,190,255,0.2)');
+    halo.addColorStop(1, 'rgba(90,130,255,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(cx, cy, Rs * 1.9, 0, TAU);
+    ctx.fill();
 
-    // permukaan padat bintang neutron: putih menyilaukan di pusat, biru di tepi
+    // bola bintang: gradien tebal dulu, permukaan & pencahayaan menyusul
     ctx.globalCompositeOperation = 'source-over';
-    const body = ctx.createRadialGradient(W / 2 - Rs * 0.28, H / 2 - Rs * 0.3, Rs * 0.08, W / 2, H / 2, Rs);
+    const body = ctx.createRadialGradient(cx - Rs * 0.3, cy - Rs * 0.34, Rs * 0.05, cx, cy, Rs);
     body.addColorStop(0, '#ffffff');
-    body.addColorStop(0.42, '#f2f6ff');
-    body.addColorStop(0.74, '#ccdbff');
-    body.addColorStop(1, '#7fa0f2');
+    body.addColorStop(0.38, '#f4f8ff');
+    body.addColorStop(0.72, '#d3e0ff');
+    body.addColorStop(1, '#93aef4');
     ctx.fillStyle = body;
     ctx.beginPath();
-    ctx.arc(W / 2, H / 2, Rs, 0, TAU);
+    ctx.arc(cx, cy, Rs, 0, TAU);
     ctx.fill();
 
-    // dua bintik panas mengorbit di permukaan (lihat putarannya)
+    // permukaan berputar: gumpalan panas & dingin, memipih saat mendekati tepi
+    // (garis meridian/lintang dihapus — itu yang bikin bentuknya seperti bola jaring)
     ctx.save();
     ctx.beginPath();
-    ctx.arc(W / 2, H / 2, Rs * 0.995, 0, TAU);
+    ctx.arc(cx, cy, Rs * 0.996, 0, TAU);
     ctx.clip();
-    ctx.translate(W / 2, H / 2);
-
-    // meridian + garis lintang: permukaan yang menyapu, putarannya jelas terlihat
-    ctx.globalCompositeOperation = 'source-over';
-    const spin = t * 1.9;
-    for (let i = 0; i < 6; i++) {
-      const ph = spin + (i * Math.PI) / 6;
-      const f = Math.abs(Math.sin(ph));
-      if (f < 0.07) continue;
-      ctx.strokeStyle = `rgba(70,100,206,${0.2 + 0.34 * f})`;
-      ctx.lineWidth = Math.max(1.4, Rs * (0.045 + 0.06 * f));
-      ctx.beginPath();
-      ctx.ellipse(0, 0, Rs * f, Rs * 0.985, 0, 0, TAU);
-      ctx.stroke();
-    }
-    for (const lat of [0.34, 0.66]) {
-      ctx.strokeStyle = 'rgba(74,104,208,0.3)';
-      ctx.lineWidth = Math.max(1.4, Rs * 0.045);
-      ctx.beginPath();
-      ctx.ellipse(0, 0, Rs * Math.sqrt(1 - lat * lat), Rs * lat, 0, 0, TAU);
-      ctx.stroke();
-    }
-
-    // bintik permukaan yang mengorbit — fitur gelap supaya putaran terbaca
-    for (const [phase, sp, size, w] of [
-      [0.2, 2.3, 0.5, 0.34],
-      [Math.PI + 0.6, 2.3, 0.42, 0.26],
-    ] as const) {
-      const a = phase + t * sp;
-      const sx = Math.cos(a) * Rs * 0.5;
-      const sy = Math.sin(a) * Rs * 0.32;
-      const rg = ctx.createRadialGradient(sx, sy, 0, sx, sy, Rs * size);
-      rg.addColorStop(0, `rgba(88,118,208,${w})`);
-      rg.addColorStop(0.5, `rgba(140,168,236,${w * 0.55})`);
-      rg.addColorStop(1, 'rgba(170,200,255,0)');
+    const spin = t * 1.15;
+    const feats: [number, number, number, boolean][] = [
+      [0.0, 0.42, 0.6, true],
+      [1.7, 0.3, 0.45, false],
+      [2.9, 0.34, 0.52, true],
+      [4.2, 0.26, 0.42, false],
+      [5.4, 0.3, 0.44, true],
+    ];
+    for (const [ph, size, amp, hot] of feats) {
+      const a = ph + spin;
+      const ca = Math.cos(a);
+      if (ca <= 0.06) continue; // di sisi belakang
+      const x = cx + ca * Rs * 0.58;
+      const y = cy + Math.sin(a) * Rs * 0.3 - Rs * 0.05;
+      const squash = 0.3 + 0.7 * ca;
+      const alpha = Math.min(1, ca * 1.7) * amp;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(squash, 1);
+      const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, Rs * size);
+      if (hot) {
+        rg.addColorStop(0, `rgba(255,255,255,${alpha})`);
+        rg.addColorStop(0.45, `rgba(255,244,224,${alpha * 0.5})`);
+        rg.addColorStop(1, 'rgba(255,240,210,0)');
+      } else {
+        rg.addColorStop(0, `rgba(74,104,208,${alpha * 0.55})`);
+        rg.addColorStop(0.5, `rgba(120,150,230,${alpha * 0.28})`);
+        rg.addColorStop(1, 'rgba(140,170,240,0)');
+      }
       ctx.fillStyle = rg;
       ctx.beginPath();
-      ctx.arc(sx, sy, Rs * size, 0, TAU);
+      ctx.arc(0, 0, Rs * size, 0, TAU);
       ctx.fill();
-    }
-
-    // kilau kecil yang ikut mengorbit
-    ctx.globalCompositeOperation = 'lighter';
-    for (const [phase, sp, size, w] of [
-      [1.1, 2.3, 0.34, 0.85],
-      [Math.PI + 2.4, 2.3, 0.26, 0.5],
-    ] as const) {
-      const a = phase + t * sp;
-      const sx = Math.cos(a) * Rs * 0.56;
-      const sy = Math.sin(a) * Rs * 0.34;
-      const rg = ctx.createRadialGradient(sx, sy, 0, sx, sy, Rs * size);
-      rg.addColorStop(0, `rgba(255,255,255,${w})`);
-      rg.addColorStop(0.45, `rgba(255,246,224,${w * 0.45})`);
-      rg.addColorStop(1, 'rgba(170,204,255,0)');
-      ctx.fillStyle = rg;
-      ctx.beginPath();
-      ctx.arc(sx, sy, Rs * size, 0, TAU);
-      ctx.fill();
+      ctx.restore();
     }
     ctx.restore();
 
-    // limb: tepi bintang yang tajam (lihat dari jauh)
+    // sisi gelap (terminator) + limb darkening → bola, bukan lingkaran datar
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, Rs, 0, TAU);
+    ctx.clip();
+    const term = ctx.createLinearGradient(cx - Rs * 0.75, cy - Rs * 0.75, cx + Rs * 0.95, cy + Rs * 0.95);
+    term.addColorStop(0, 'rgba(255,255,255,0)');
+    term.addColorStop(0.5, 'rgba(40,64,150,0)');
+    term.addColorStop(1, 'rgba(14,26,84,0.5)');
+    ctx.fillStyle = term;
+    ctx.fillRect(cx - Rs, cy - Rs, Rs * 2, Rs * 2);
+    const limb = ctx.createRadialGradient(cx, cy, Rs * 0.55, cx, cy, Rs);
+    limb.addColorStop(0, 'rgba(46,74,176,0)');
+    limb.addColorStop(0.78, 'rgba(46,74,176,0.14)');
+    limb.addColorStop(1, 'rgba(34,58,158,0.52)');
+    ctx.fillStyle = limb;
+    ctx.beginPath();
+    ctx.arc(cx, cy, Rs, 0, TAU);
+    ctx.fill();
+    const spec = ctx.createRadialGradient(cx - Rs * 0.34, cy - Rs * 0.42, 0, cx - Rs * 0.34, cy - Rs * 0.42, Rs * 0.55);
+    spec.addColorStop(0, 'rgba(255,255,255,0.72)');
+    spec.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = spec;
+    ctx.beginPath();
+    ctx.arc(cx, cy, Rs, 0, TAU);
+    ctx.fill();
+    ctx.restore();
+
+    // tepi bola: kilau Fresnel yang tajam
     ctx.globalCompositeOperation = 'lighter';
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(236,244,255,0.95)';
-    ctx.lineWidth = Math.max(1.6, Rs * 0.05);
-    ctx.arc(W / 2, H / 2, Rs * 1.01, 0, TAU);
+    ctx.strokeStyle = 'rgba(238,246,255,0.9)';
+    ctx.lineWidth = Math.max(1.4, Rs * 0.035);
+    ctx.arc(cx, cy, Rs * 1.005, 0, TAU);
     ctx.stroke();
 
     // dua simpul panas yang mengorbit di piringan — tanda "ini berputar"
@@ -309,7 +351,7 @@ export function initBlackHole(): void {
       [inner * 1.75, 2.5, 1.1, 0.38],
     ] as const) {
       ctx.save();
-      ctx.translate(W / 2, H / 2);
+      ctx.translate(cx, cy);
       ctx.rotate(ROLL);
       ctx.globalCompositeOperation = 'lighter';
       const a = phase + t * sp;
@@ -325,23 +367,18 @@ export function initBlackHole(): void {
       ctx.restore();
     }
 
-    // setengah depan (menutupi bayangan)
-    for (let i = 0; i < n; i++) {
-      const f = i / (n - 1);
-      const r = inner + (outer - inner) * Math.pow(f, 1.35);
-      const fall = Math.pow(1 - f, 1.4);
-      const alpha = 0.07 + 0.46 * fall;
-      const kep = Math.pow(inner / r, 1.5);
-      ring(r, alpha, true, ((outer - inner) / n) * 1.6, t * kep * 170, dashes[i]);
-    }
+    // piringan: setengah depan (menutupi bayangan bola)
+    diskHalf(t, true);
 
-    // cahaya yang lolos di tepi bayangan
+    // cahaya yang lolos di tepi — redup & lembut, bukan cincin biru tebal
     ctx.globalCompositeOperation = 'source-over';
+    const edge = ctx.createRadialGradient(cx, cy, Rs * 1.12, cx, cy, Rs * 1.75);
+    edge.addColorStop(0, 'rgba(120,150,255,0.3)');
+    edge.addColorStop(1, 'rgba(120,150,255,0)');
+    ctx.fillStyle = edge;
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(120,150,255,0.35)';
-    ctx.lineWidth = Rs * 0.5;
-    ctx.arc(W / 2, H / 2, Rs * 1.3, 0, TAU);
-    ctx.stroke();
+    ctx.arc(cx, cy, Rs * 1.75, 0, TAU);
+    ctx.fill();
   };
 
   /* ---------- kanvas sinar ---------- */

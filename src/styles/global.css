@@ -36,8 +36,8 @@ html[data-theme=dark] .card-face:has(.live-frame) .card-note{background:#141418e
 html[data-theme=dark] .caret{background:#33333d}
 /* ukiran bawah: mode gelap pakai plat gelap terpisah, mode terang pakai plat biru-putih */
 html[data-theme=dark] .plate-block .plate img{content:url('/plate-dark.webp');filter:brightness(.78) saturate(.95)}
-html[data-theme=dark] .plate-block .card-face{
-  background:linear-gradient(155deg,rgba(255,255,255,.36),rgba(255,255,255,.14) 52%,rgba(255,255,255,.26))}
+/* mode gelap: kaca yang sama, hanya latar belakangnya yang gelap — jangan
+   ditimpa gradien terpisah supaya strukturnya tetap satu */
 html{background:var(--bg);-webkit-text-size-adjust:100%;overflow-x:clip}
 body{margin:0;color:var(--text);font:var(--body)/1.5 var(--sans);
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -242,17 +242,56 @@ body:has(.plate-block) .site-foot{color:#f4f3f0;text-shadow:0 1px 3px rgba(5,9,2
 .plate-block .card{width:min(17rem,100vw - 3rem)}
 
 /* ---- kartu & teks di atas ukiran: liquid glass + tulisan putih ---- */
+/* Lapisannya: kilau spekuler (pojok kiri atas), pantulan pemantulan (pojok kanan
+   bawah), tirai putih tipis, lalu blur kuat + saturasi — biar terasa seperti kaca
+   tebal iOS, bukan kotak translusen biasa. */
 .plate-block .card-face{
-  background:linear-gradient(155deg,rgba(255,255,255,.44),rgba(255,255,255,.2) 52%,rgba(255,255,255,.32));
-  -webkit-backdrop-filter:blur(26px) saturate(125%) brightness(1.04);
-  backdrop-filter:blur(26px) saturate(125%) brightness(1.04);
-  border:1px solid rgba(255,255,255,.55);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.78),inset 0 -1px 0 rgba(255,255,255,.24),
-    0 26px 50px -26px rgba(3,7,20,.8)}
+  background:
+    radial-gradient(118% 78% at 16% -12%, rgba(255,255,255,.9), rgba(255,255,255,0) 46%),
+    radial-gradient(76px 54px at 26px 20px, rgba(255,255,255,.95), rgba(255,255,255,0) 72%),
+    radial-gradient(92% 62% at 90% 114%, rgba(255,255,255,.45), rgba(255,255,255,0) 58%),
+    linear-gradient(180deg, rgba(255,255,255,.42), rgba(255,255,255,0) 18%),
+    linear-gradient(155deg, rgba(255,255,255,.4), rgba(255,255,255,.17) 50%, rgba(255,255,255,.34));
+  -webkit-backdrop-filter:blur(34px) saturate(185%) brightness(1.1);
+  backdrop-filter:blur(34px) saturate(185%) brightness(1.1);
+  border:1px solid rgba(255,255,255,.66);
+  box-shadow:
+    inset 1.5px 1.5px 0 rgba(255,255,255,.95),
+    inset -1.5px -1.5px 0 rgba(255,255,255,.32),
+    inset 0 0 0 1px rgba(255,255,255,.38),
+    inset 0 0 0 3.5px rgba(255,255,255,.1),
+    inset 0 0 30px rgba(255,255,255,.26),
+    inset 0 -20px 34px -28px rgba(255,255,255,.8),
+    0 1px 0 rgba(255,255,255,.55),
+    0 14px 26px -16px rgba(3,7,20,.55),
+    0 44px 74px -36px rgba(3,7,20,.95),
+    0 0 0 .5px rgba(255,255,255,.18)}
+/* butiran halus: kaca asli selalu punya grain, bukan permukaan mulus sempurna */
+.plate-block .card-face::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:140px 140px;opacity:.07;mix-blend-mode:overlay}
+/* kilau yang merayap pelan — tanda "cair", bukan statis */
+.plate-block .card-face::after{
+  content:"";position:absolute;inset:-45%;pointer-events:none;z-index:-1;
+  background:linear-gradient(112deg,transparent 40%,rgba(255,255,255,.5) 48%,rgba(255,255,255,.14) 55%,transparent 63%);
+  animation:sheen 7.5s cubic-bezier(.45,.05,.55,.95) infinite}
+@keyframes sheen{0%,100%{transform:translate3d(-16%,0,0)}50%{transform:translate3d(16%,0,0)}}
+@media (prefers-reduced-motion:reduce){.plate-block .card-face::after{animation:none}}
 .plate-block .card-name,.plate-block .card-desc{
   color:#fff;text-shadow:0 1px 2px rgba(5,9,24,.92),0 2px 7px rgba(5,9,24,.78),0 0 20px rgba(5,9,24,.55)}
 .plate-block .card-name:hover{color:#ded7ff}
-.plate-block .card-note{color:rgba(255,255,255,.96);text-shadow:0 1px 2px rgba(5,9,24,.9),0 2px 6px rgba(5,9,24,.72),0 0 16px rgba(5,9,24,.5)}
+/* catatan kecil di kaki kartu: selalu dapat pil gelapnya sendiri — di atas
+   kaca bening latar biru, teks putih murni hanya dapat rasio ~3:1 */
+html .plate-block .card-face .card-note{
+  color:rgba(255,255,255,.97);
+  text-shadow:0 1px 2px rgba(4,8,22,.9),0 2px 6px rgba(4,8,22,.75);
+  background:rgba(6,9,20,.52);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  border:1px solid rgba(255,255,255,.16);
+  padding:5px 9px;border-radius:10px;
+  left:14px;right:14px;bottom:12px;text-align:center}
+html[data-theme=dark] .plate-block .card-face .card-note{background:rgba(14,15,22,.62)}
 .plate-block .shelf-btn{
   background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);color:#fff;
   -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
