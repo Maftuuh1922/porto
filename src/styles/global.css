@@ -52,9 +52,12 @@ em{font-style:italic;color:var(--ink)}
   background-position:center 70%;background-size:cover;background-repeat:no-repeat;opacity:.9;
   -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%)}
-/* teks navbar putih polos di atas ilustrasi, tanpa efek bayangan */
-body:has(.page-bg) .site-nav a{color:#fff}
-body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:#fff}
+/* teks navbar polos di atas ilustrasi: gelap di mode terang, putih di mode gelap */
+body:has(.page-bg) .site-nav a{color:var(--ink)}
+body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:var(--ink)}
+html[data-theme=dark] body:has(.page-bg) .site-nav a,
+html[data-theme=dark] body:has(.page-bg) .site-nav a:hover,
+html[data-theme=dark] body:has(.page-bg) .site-nav a[aria-current=page]{color:#fff}
 
 /* ---- nav (font asli, tanpa garis bawah) ---- */
 .site-nav{justify-content:center;gap:22px;margin-bottom:56px;padding-top:36px;display:flex}
@@ -66,7 +69,8 @@ body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current
 .theme-toggle:hover{opacity:1;color:var(--ink)}
 .theme-toggle svg{width:13px;height:13px;display:block}
 .theme-toggle .i-sun{display:none}
-body:has(.page-bg) .theme-toggle{color:#fff;opacity:.8}
+body:has(.page-bg) .theme-toggle{color:var(--ink);opacity:.75}
+html[data-theme=dark] body:has(.page-bg) .theme-toggle{color:#fff;opacity:.8}
 html[data-theme=dark] .theme-toggle .i-sun{display:block}
 html[data-theme=dark] .theme-toggle .i-moon{display:none}
 
@@ -213,6 +217,8 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
   text-shadow:0 1px 4px rgba(0,0,0,.8)}
 .bh-readout.is-live{color:#b9a6ff}
 .gw{will-change:transform;display:inline-block}
+/* salam kenal di atas ilustrasi krem: satu tingkat lebih gelap biar lolos AA */
+html:not([data-theme=dark]) body:has(.page-bg) .gw:not(a .gw){color:#54535c}
 .gw-keep{white-space:nowrap}
 a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offset:3px}
 
