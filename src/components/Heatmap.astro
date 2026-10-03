@@ -1,0 +1,73 @@
+---
+// Grafik kontribusi gaya GitHub: 53 minggu × 7 hari, tiap kotak satu hari.
+import type { Contrib } from '../lib/contrib';
+
+const { data, live = false } = Astro.props as { data: Contrib; live?: boolean };
+const days = data.days;
+
+const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+/* sejajarkan kolom pertama ke hari Minggu seperti GitHub */
+const pad = new Date(days[0].date + 'T00:00:00Z').getUTCDay();
+const cells: (Contrib['days'][number] | null)[] = [
+  ...Array.from({ length: pad }, () => null),
+  ...days,
+];
+while (cells.length % 7 !== 0) cells.push(null);
+
+const weeks: (Contrib['days'][number] | null)[][] = [];
+for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
+let bulanTerakhir = -1;
+const labelBulan = weeks.map((w) => {
+  const pertama = w.find(Boolean);
+  if (!pertama) return '';
+  const m = new Date(pertama.date + 'T00:00:00Z').getUTCMonth();
+  if (m === bulanTerakhir) return '';
+  bulanTerakhir = m;
+  return BULAN[m];
+});
+
+const aktif = days.filter((d) => d.count > 0).length;
+const tertinggi = Math.max(...days.map((d) => d.count));
+const fmt = new Intl.NumberFormat('id-ID');
+const rentang = `${BULAN[new Date(days[0].date + 'T00:00:00Z').getUTCMonth()]} ${days[0].date.slice(0, 4)} – ${BULAN[new Date(days[days.length - 1].date + 'T00:00:00Z').getUTCMonth()]} ${days[days.length - 1].date.slice(0, 4)}`;
+---
+<div class="heat-card">
+  <div class="heat-head">
+    <div>
+      <div class="heat-total">{fmt.format(data.total)}<span>kontribusi</span></div>
+      <div class="heat-sub">
+        {aktif} hari aktif · {rentang} · tertinggi {tertinggi}/hari<br />
+        {live ? 'data langsung dari GitHub saat build' : 'data tersimpan — refresh saat build berikutnya'}
+      </div>
+    </div>
+    <div class="heat-legend" aria-hidden="true">
+      <span>sedikit</span>
+      <i class="heat-cell l0"></i><i class="heat-cell l1"></i><i class="heat-cell l2"></i
+      ><i class="heat-cell l3"></i><i class="heat-cell l4"></i>
+      <span>banyak</span>
+    </div>
+  </div>
+
+  <div class="heat-months" aria-hidden="true">
+    {labelBulan.map((m) => <span>{m}</span>)}
+  </div>
+
+  <div class="heat-grid" role="img" aria-label={`Grafik kontribusi GitHub ${data.total} kontribusi dalam 12 bulan terakhir`}>
+    {
+      cells.map((d) =>
+        d ? (
+          <span class={`heat-cell l${d.level}`} title={`${d.date} · ${d.count} kontribusi`} />
+        ) : (
+          <span class="heat-cell empty" />
+        ),
+      )
+    }
+  </div>
+
+  <div class="heat-foot">
+    <span>tiap kotak = satu hari · baris atas Minggu, baris bawah Sabtu</span>
+    <span>github.com/Maftuuh1922</span>
+  </div>
+</div>

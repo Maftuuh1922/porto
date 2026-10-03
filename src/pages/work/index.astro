@@ -3,8 +3,11 @@ import Base from '../../layouts/Base.astro';
 import Shelf from '../../components/Shelf.astro';
 import Card from '../../components/Card.astro';
 import { fetchStats } from '../../lib/stats';
+import { fetchContrib } from '../../lib/contrib';
+import Heatmap from '../../components/Heatmap.astro';
 
 const { stats } = await fetchStats();
+const { data: contrib, live: contribLive } = await fetchContrib();
 
 const filter = [
   { v: 'all', l: 'Semua' },
@@ -232,6 +235,11 @@ const filter = [
       </div>
     </Card>
   </Shelf>
+
+  <section class="heat-wrap">
+    <p class="label">Kontribusi GitHub — kotak hijau, 12 bulan terakhir</p>
+    <Heatmap data={contrib} live={contribLive} />
+  </section>
 </Base>
 
 <script>

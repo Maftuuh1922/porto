@@ -239,6 +239,37 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
 /* ---- 404 ---- */
 .err-title{font-size:clamp(40px,7vw,68px);letter-spacing:-.03em;margin:6px 0 16px}
 
+/* ---- grafik kontribusi GitHub (kotak hijau) ---- */
+.heat-wrap{width:min(56rem,100vw - 2rem);position:relative;left:50%;transform:translateX(-50%)}
+.heat-card{background:#fff;border:1px solid var(--rule);border-radius:18px;padding:20px 22px 16px;
+  box-shadow:var(--lift);overflow:hidden}
+.heat-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.heat-total{font:600 clamp(26px,3.4vw,34px)/1 var(--sans);color:var(--ink);letter-spacing:-.02em;display:block}
+.heat-total span{font:400 13px var(--sans);color:var(--mute);margin-left:8px;letter-spacing:0}
+.heat-sub{font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--mute);margin-top:8px}
+.heat-legend{display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:10px;color:var(--mute)}
+.heat-legend .heat-cell{width:11px;height:11px;aspect-ratio:auto}
+.heat-months{display:grid;grid-template-columns:repeat(53,minmax(0,1fr));gap:1px;
+  font-family:var(--mono);font-size:10px;color:var(--mute);margin-bottom:6px}
+.heat-months span{white-space:nowrap;min-width:0}
+.heat-grid{display:grid;grid-template-rows:repeat(7,auto);grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:1px}
+.heat-cell{aspect-ratio:1;border-radius:2px;display:block;width:100%}
+.heat-cell.empty{visibility:hidden}
+.l0{background:#ebedf0}
+.l1{background:#9be9a8}
+.l2{background:#40c463}
+.l3{background:#30a14e}
+.l4{background:#216e39}
+.heat-grid .heat-cell{transition:outline-color .1s}
+.heat-grid .heat-cell:hover{outline:2px solid var(--ink);outline-offset:1px;position:relative;z-index:1}
+.heat-foot{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:14px;
+  font-family:var(--mono);font-size:10.5px;color:var(--mute)}
+@media (max-width:640px){
+  .heat-card{padding:16px 14px 12px}
+  .heat-months,.heat-foot{font-size:9px}
+  .heat-total{font-size:26px}
+}
+
 @media (max-width:640px){
   .site-nav{gap:16px}
   .site-foot{flex-direction:column;gap:6px}
