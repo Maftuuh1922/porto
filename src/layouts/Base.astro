@@ -42,9 +42,6 @@ const links = [
           links.map((l) => (
             <a href={l.href} aria-current={l.id === active ? 'page' : undefined}>
               {l.label}
-              <svg class="squiggle" aria-hidden="true" height="7" width={l.w} viewBox={`0 0 ${l.w} 7`}>
-                <path pathLength="1" d={l.d} />
-              </svg>
             </a>
           ))
         }

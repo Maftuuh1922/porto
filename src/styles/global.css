@@ -27,16 +27,11 @@ em{font-style:italic;color:var(--ink)}
 body:has(.page-bg) .site-nav a{color:#fff}
 body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:#fff}
 
-/* ---- nav ---- */
-.site-nav{justify-content:center;gap:22px;margin-bottom:56px;padding-top:36px;display:flex}
-.site-nav a{color:var(--mute);padding-block:4px 9px;position:relative;display:inline-block}
+/* ---- nav (gaya housresearch: huruf besar putih, tanpa garis bawah) ---- */
+.site-nav{justify-content:center;gap:24px;margin-bottom:56px;padding-top:36px;display:flex}
+.site-nav a{color:var(--mute);padding-block:5px;position:relative;display:inline-block;
+  text-transform:uppercase;letter-spacing:.1em;transition:opacity .15s ease}
 .site-nav a:hover,.site-nav a[aria-current=page]{color:var(--ink)}
-.squiggle{pointer-events:none;position:absolute;bottom:0;left:0;overflow:visible}
-.squiggle path{fill:none;stroke:var(--accent);stroke-width:1.5px;stroke-linecap:round;
-  stroke-dasharray:1;stroke-dashoffset:1px;stroke-opacity:0;
-  transition:stroke-dashoffset .18s ease-in,stroke-opacity 0s linear .18s}
-.site-nav a[aria-current=page] .squiggle path{stroke-dashoffset:0;stroke-opacity:1;
-  transition:stroke-dashoffset .42s cubic-bezier(.3,0,.2,1) .12s,stroke-opacity 0s linear .12s}
 
 /* ---- layout halaman ---- */
 .page{width:min(var(--col),100% - 2rem);margin-inline:auto}
