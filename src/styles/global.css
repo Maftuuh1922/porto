@@ -24,9 +24,7 @@ html[data-theme=dark] .feed,html[data-theme=dark] .strip,html[data-theme=dark] .
 html[data-theme=dark] .sheet,html[data-theme=dark] .live-frame{
   --ink:#121214;--text:#636268;--mute:#6b6a72;--rule:#e6e5e2;--card:#f1f1ef;--accent:#6b46c1}
 html[data-theme=dark]{background:var(--bg);color-scheme:dark}
-/* hero: di mode gelap ilustrasinya pindah ke ukiran Hermes
-   (background-position TIDAK ditimpa — biar sejajar dengan mode terang) */
-html[data-theme=dark] .page-bg{background-image:url('/bg/hermes-dark.webp')!important}
+/* transisi hero (terang↔gelap) sekarang ditangani layer cross-fade di .page-bg::before/::after */
 html[data-theme=dark] .filter-btn[aria-pressed="true"],html[data-theme=dark] .btn-cv{color:#0d0d10}
 html[data-theme=dark] .contact-row:hover{background:#ffffff10}
 html[data-theme=dark] .spec{background:#1d1d23}
@@ -46,11 +44,29 @@ p{margin:0}
 p+p{margin-top:16px}
 em{font-style:italic;color:var(--ink)}
 
-/* ---- latar ilustrasi (index): di balik navbar sampai hero, bawahnya memudar menyatu ---- */
+/* ---- latar ilustrasi (index): dua layer (terang + gelap) cross-fade saat ganti tema.
+   Kedua layer memakai ukiran yang sama geometrinya, jadi transisinya mulus.
+   Hanya div .page-bg yang ada di halaman index; layer-nya di ::before (terang)
+   dan ::after (gelap), di-cross-fade via opacity saat data-theme berubah. ---- */
 .page-bg{position:absolute;top:0;left:0;right:0;height:min(660px,88vh);z-index:-1;pointer-events:none;
-  background-position:center 70%;background-size:cover;background-repeat:no-repeat;opacity:1;
   -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%)}
+.page-bg::before,.page-bg::after{
+  content:"";position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;
+  background-position:center 70%;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
+  transition:opacity .8s cubic-bezier(.4,0,.2,1)}
+.page-bg::before{background-image:url('/bg/hermes.webp');opacity:1}
+.page-bg::after{background-image:url('/bg/hermes-dark.webp');opacity:0}
+html[data-theme=dark] .page-bg::before{opacity:0}
+html[data-theme=dark] .page-bg::after{opacity:1}
+/* tanpa animasi: matikan pseudo, gambar langsung di layer utama (satu file per mode) */
+@media (prefers-reduced-motion:reduce){
+  .page-bg::before,.page-bg::after{display:none}
+  .page-bg{background-image:url('/bg/hermes.webp');background-size:cover;background-position:center 70%}
+  html[data-theme=dark] .page-bg{background-image:url('/bg/hermes-dark.webp')}
+}
 /* teks navbar polos di atas ilustrasi: gelap di mode terang, putih di mode gelap */
 body:has(.page-bg) .site-nav a{color:var(--ink)}
 body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:var(--ink)}
