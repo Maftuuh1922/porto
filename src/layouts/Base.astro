@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 
-const { title = 'Muhammad Maftuh', active = 'index' } = Astro.props;
+const { title = 'Muhammad Maftuh', active = 'index', bg = '' } = Astro.props;
 
 // garis bawah bergelombang, panjangnya beda tiap label (persis gaya yuvich)
 const links = [
@@ -35,6 +35,7 @@ const links = [
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🛠</text></svg>" />
   </head>
   <body>
+    {bg && <div class="page-bg" aria-hidden="true" style={`background-image:url('${bg}')`} />}
     <header>
       <nav class="site-nav" aria-label="Pages">
         {
