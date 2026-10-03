@@ -62,6 +62,16 @@ const links = [
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script defer data-domain="porto-maftuh.vercel.app" src="https://plausible.io/js/script.js"></script>
+    <!-- tema: jalan sebelum paint pertama supaya tidak ada kedip -->
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'dark' && t !== 'light') {
+          t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     {bg && <div class="page-bg" aria-hidden="true" style={`background-image:url('${bg}')`} />}
@@ -74,6 +84,16 @@ const links = [
             </a>
           ))
         }
+        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Ganti mode terang / gelap">
+          <svg class="i-moon" viewBox="0 0 14 14" aria-hidden="true"
+            ><path d="M12.2 8.7A5.7 5.7 0 0 1 5.3 1.8a5.7 5.7 0 1 0 6.9 6.9Z" fill="currentColor"></path></svg
+          >
+          <svg class="i-sun" viewBox="0 0 14 14" aria-hidden="true"
+            ><circle cx="7" cy="7" r="3" fill="currentColor"></circle><g stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              ><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.9 2.9l1 1M10.1 10.1l1 1M11.1 2.9l-1 1M3.9 10.1l-1 1"></path></g
+            ></svg
+          >
+        </button>
       </nav>
     </header>
 
@@ -95,6 +115,29 @@ const links = [
       };
       tick();
       setInterval(tick, 1000);
+
+      // --- mode gelap ---
+      const root = document.documentElement;
+      const btn = document.getElementById('themeToggle');
+      const applyTheme = (t) => {
+        root.dataset.theme = t;
+        btn?.setAttribute('aria-pressed', String(t === 'dark'));
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute('content', t === 'dark' ? '#0d0d10' : '#fafaf9');
+        try {
+          localStorage.setItem('theme', t);
+        } catch (e) {}
+      };
+      applyTheme(root.dataset.theme === 'dark' ? 'dark' : 'light');
+      btn?.addEventListener('click', () => applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        let saved = null;
+        try {
+          saved = localStorage.getItem('theme');
+        } catch (err) {}
+        if (saved !== 'dark' && saved !== 'light') applyTheme(e.matches ? 'dark' : 'light');
+      });
     </script>
   </body>
 </html>
