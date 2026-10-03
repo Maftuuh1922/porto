@@ -24,9 +24,9 @@ html[data-theme=dark] .feed,html[data-theme=dark] .strip,html[data-theme=dark] .
 html[data-theme=dark] .sheet,html[data-theme=dark] .live-frame{
   --ink:#121214;--text:#636268;--mute:#6b6a72;--rule:#e6e5e2;--card:#f1f1ef;--accent:#6b46c1}
 html[data-theme=dark]{background:var(--bg);color-scheme:dark}
-/* hero: di mode gelap ilustrasinya pindah ke ukiran Merkurius */
+/* hero: di mode gelap ilustrasinya pindah ke ukiran Hermes */
 html[data-theme=dark] .page-bg{background-image:url('/bg/hermes-dark.webp')!important;
-  background-position:center 36%;opacity:.92;filter:brightness(.58) saturate(.92)}
+  background-position:center 100%;opacity:.95;filter:brightness(.72) saturate(.92)}
 html[data-theme=dark] .filter-btn[aria-pressed="true"],html[data-theme=dark] .btn-cv{color:#0d0d10}
 html[data-theme=dark] .contact-row:hover{background:#ffffff10}
 html[data-theme=dark] .spec{background:#1d1d23}
@@ -206,8 +206,11 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
   -webkit-mask-image:radial-gradient(50% 50%,#000 58%,transparent 100%);
   mask-image:radial-gradient(50% 50%,#000 58%,transparent 100%)}
 .hole-caption{text-align:center;font-size:var(--small);color:var(--mute);min-height:1.55em;margin:6px 0 0}
-.bh-readout{font-family:var(--mono);letter-spacing:-.01em}
-.bh-readout.is-live{color:var(--accent)}
+.bh-readout{font-family:var(--mono);letter-spacing:-.01em;
+  color:#f6f5f2;background:rgba(8,10,18,.66);padding:3px 9px;border-radius:999px;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.bh-readout.is-live{color:#b9a6ff}
 .gw{will-change:transform;display:inline-block}
 .gw-keep{white-space:nowrap}
 a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offset:3px}
