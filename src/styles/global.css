@@ -175,6 +175,12 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 .gw-keep{white-space:nowrap}
 a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offset:3px}
 
+/* ---- plate (index): ukiran di bawah hero ---- */
+.plate{margin:0 auto;border:1px solid var(--rule);border-radius:16px;overflow:hidden;background:var(--card)}
+.plate img{display:block;width:100%;height:auto}
+.plate figcaption{font-family:var(--mono);font-size:11px;letter-spacing:.01em;color:var(--mute);
+  padding:9px 13px;border-top:1px solid var(--rule)}
+
 /* ---- meja (about): benda telanjang di atas latar polos, tanpa kartu ---- */
 .desk-mat{position:relative;width:min(var(--wide),100vw - 2rem);margin-inline:auto;min-height:560px}
 .desk-object img{pointer-events:none;display:block;filter:drop-shadow(0 12px 20px rgba(16,16,20,.16))}
