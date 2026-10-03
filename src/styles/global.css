@@ -185,11 +185,31 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
 .plate img{position:absolute;inset:0;display:block;width:100%;height:100%;
   object-fit:cover;object-position:center 42%}
 .plate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:190px;
-  background:linear-gradient(to bottom,transparent 0,rgba(5,9,24,.38) 55%,rgba(5,9,24,.88) 100%)}
+  background:linear-gradient(to bottom,transparent 0,rgba(4,7,18,.42) 55%,rgba(4,7,18,.93) 100%)}
 body:has(.plate-block) .site-foot{position:relative;z-index:1;margin-top:72px;color:#f4f3f0}
-body:has(.plate-block) .site-foot .ticker{color:#dedcd7}
+body:has(.plate-block) .site-foot .ticker{color:#fff}
+body:has(.plate-block) .plate-block .label{color:#5c5b64}
 body:has(.plate-block) .shelf-pos{color:#e8e6e1;text-shadow:0 1px 3px rgba(5,9,24,.8)}
 body:has(.plate-block) .site-foot{color:#f4f3f0;text-shadow:0 1px 3px rgba(5,9,24,.8)}
+
+/* ---- kartu & teks di atas ukiran: liquid glass + tulisan putih ---- */
+.plate-block .card-face{
+  background:linear-gradient(155deg,rgba(255,255,255,.44),rgba(255,255,255,.2) 52%,rgba(255,255,255,.32));
+  -webkit-backdrop-filter:blur(26px) saturate(125%) brightness(1.04);
+  backdrop-filter:blur(26px) saturate(125%) brightness(1.04);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78),inset 0 -1px 0 rgba(255,255,255,.24),
+    0 26px 50px -26px rgba(3,7,20,.8)}
+.plate-block .card-name,.plate-block .card-desc{
+  color:#fff;text-shadow:0 1px 4px rgba(5,9,24,.7),0 0 14px rgba(5,9,24,.35)}
+.plate-block .card-name:hover{color:#ded7ff}
+.plate-block .card-note{color:rgba(255,255,255,.94);text-shadow:0 1px 3px rgba(5,9,24,.7)}
+.plate-block .shelf-btn{
+  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);color:#fff;
+  -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+.plate-block .shelf-btn:disabled{color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.25)}
+
 
 /* ---- meja (about): benda telanjang di atas latar polos, tanpa kartu ---- */
 .desk-mat{position:relative;width:min(var(--wide),100vw - 2rem);margin-inline:auto;min-height:560px}
