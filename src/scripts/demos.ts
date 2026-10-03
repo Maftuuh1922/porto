@@ -131,6 +131,7 @@ export function batik(): void {
 export function fotobooth(): void {
   const note = $('fb-note');
   const ph = document.querySelectorAll('#strip .ph');
+  if (!ph.length) return;
   let k = 0;
   setInterval(() => {
     if (note) note.textContent = 'pose ' + ((k % 4) + 1) + '/4 · kilat!';
