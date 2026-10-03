@@ -10,7 +10,7 @@
   --edge:max(1rem,(100vw - var(--col))/2);
   --lift:0 1px 1px #1010140f,0 10px 18px -6px #10101429,0 28px 44px -16px #1010144d;
 }
-html{background:var(--bg);-webkit-text-size-adjust:100%}
+html{background:var(--bg);-webkit-text-size-adjust:100%;overflow-x:clip}
 body{margin:0;color:var(--text);font:var(--body)/1.5 var(--sans);
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:inherit;text-decoration:none}
@@ -175,14 +175,14 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 .gw-keep{white-space:nowrap}
 a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offset:3px}
 
-/* ---- plate (index): hero di paling bawah, atasnya menyatu ---- */
-.page>.wide.plate{margin-top:14px}
-.plate{margin-inline:auto;border:0;border-radius:0;overflow:visible;background:none;position:relative}
-.plate img{display:block;width:100%;height:auto;
+/* ---- plate (index): hero paling bawah, lebar penuh sebagai latar ---- */
+.page>.wide.plate{margin-top:14px;width:100vw;margin-inline:calc(50% - 50vw)}
+.plate{position:relative;overflow:hidden;background:#0d1b3d}
+.plate img{display:block;width:100%;height:clamp(240px,46vw,560px);object-fit:cover;object-position:center 38%;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 104px);
   mask-image:linear-gradient(to bottom,transparent 0,#000 104px)}
 .plate figcaption{font-family:var(--mono);font-size:var(--small);color:var(--mute);
-  text-align:center;padding:2px 0 0;border:0;letter-spacing:-.01em}
+  text-align:center;padding:10px 0 0;border:0;letter-spacing:-.01em}
 
 /* ---- meja (about): benda telanjang di atas latar polos, tanpa kartu ---- */
 .desk-mat{position:relative;width:min(var(--wide),100vw - 2rem);margin-inline:auto;min-height:560px}
