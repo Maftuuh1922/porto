@@ -26,8 +26,7 @@ html[data-theme=dark] .sheet,html[data-theme=dark] .live-frame{
 html[data-theme=dark]{background:var(--bg);color-scheme:dark}
 /* hero: di mode gelap ilustrasinya pindah ke ukiran Hermes
    (background-position TIDAK ditimpa — biar sejajar dengan mode terang) */
-html[data-theme=dark] .page-bg{background-image:url('/bg/hermes-dark.webp')!important;
-  filter:brightness(.72) saturate(.92)}
+html[data-theme=dark] .page-bg{background-image:url('/bg/hermes-dark.webp')!important}
 html[data-theme=dark] .filter-btn[aria-pressed="true"],html[data-theme=dark] .btn-cv{color:#0d0d10}
 html[data-theme=dark] .contact-row:hover{background:#ffffff10}
 html[data-theme=dark] .spec{background:#1d1d23}
