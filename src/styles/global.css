@@ -27,10 +27,9 @@ em{font-style:italic;color:var(--ink)}
 body:has(.page-bg) .site-nav a{color:#fff}
 body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:#fff}
 
-/* ---- nav (gaya housresearch: huruf besar putih, tanpa garis bawah) ---- */
-.site-nav{justify-content:center;gap:24px;margin-bottom:56px;padding-top:36px;display:flex}
-.site-nav a{color:var(--mute);padding-block:5px;position:relative;display:inline-block;
-  text-transform:uppercase;letter-spacing:.1em;transition:opacity .15s ease}
+/* ---- nav (font asli, tanpa garis bawah) ---- */
+.site-nav{justify-content:center;gap:22px;margin-bottom:56px;padding-top:36px;display:flex}
+.site-nav a{color:var(--mute);padding-block:4px 9px;position:relative;display:inline-block}
 .site-nav a:hover,.site-nav a[aria-current=page]{color:var(--ink)}
 
 /* ---- layout halaman ---- */
