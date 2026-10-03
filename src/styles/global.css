@@ -45,7 +45,9 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 /* ---- rak horizontal ---- */
 .shelf{width:100vw;margin-inline:calc(50% - 50vw)}
 .shelf-track{overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:var(--edge);
-  padding-inline:var(--edge) 1rem;scrollbar-width:none;gap:16px;padding-bottom:4px;display:flex;overflow-x:auto}
+  padding-inline:var(--edge) 1rem;scrollbar-width:none;gap:16px;padding-bottom:4px;display:flex;overflow-x:auto;
+  cursor:grab}
+.shelf-track.dragging{cursor:grabbing;user-select:none;scroll-snap-type:none}
 .shelf-track::-webkit-scrollbar{display:none}
 .card{width:min(var(--card-w),100vw - 3rem);scroll-snap-align:start;flex:none;margin:0}
 .card-face{aspect-ratio:352/384;background:var(--card);isolation:isolate;border-radius:24px;
