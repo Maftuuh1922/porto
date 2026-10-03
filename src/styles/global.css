@@ -62,11 +62,8 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 .live-tag::before{content:"";background:#3ddc84;border-radius:50%;width:6px;height:6px;
   box-shadow:0 0 6px #3ddc84}
 .live-tag:hover{background:#101014}
-.card-face:has(.live-frame) .card-note,.card-face:has(.live-shot) .card-note{background:#fafaf9e6;
+.card-face:has(.live-frame) .card-note{background:#fafaf9e6;
   padding:5px 8px;border-radius:9px;left:14px;right:14px;bottom:12px;text-align:center}
-/* situs live yang menolak di-iframe (X-Frame-Options) → tampilkan tangkapan layar aslinya */
-.live-shot{position:absolute;inset:0;background:#fff}
-.live-shot img{width:100%;height:100%;object-fit:cover;object-position:50% 0;display:block}
 .card-cap{align-items:baseline;gap:8px;margin-top:12px;padding-left:2px;display:flex;flex-wrap:wrap}
 .card-name{color:var(--ink);flex:none}
 .card-name:hover{color:var(--accent)}

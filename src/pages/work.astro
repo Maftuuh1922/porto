@@ -63,14 +63,32 @@ import Card from '../components/Card.astro';
     </Card>
 
     <Card
+      name="Wastra.ai"
+      href="https://github.com/Maftuuh1922/wastra"
+      desc="kenali, pelajari &amp; kreasi motif batik Nusantara · TypeScript"
+      note="situs live · wastra-plum.vercel.app"
+    >
+      <div class="live-frame">
+        <iframe
+          src="https://wastra-plum.vercel.app"
+          title="Wastra.ai — situs live"
+          loading="lazy"
+          tabindex="-1"></iframe>
+        <a class="live-tag" href="https://wastra-plum.vercel.app" target="_blank" rel="noopener">live</a>
+      </div>
+    </Card>
+
+    <Card
       name="NeovarchLabs"
       href="https://www.neovarchlabs.web.id"
       desc="situs agensi + tagihan QRIS · Next.js"
-      note="situs live · neovarchlabs.web.id"
+      note="PDF invoice dibuat di sisi server"
     >
-      <div class="live-shot">
-        <img src="/live/neovarchlabs.webp" alt="Tangkapan layar situs NeovarchLabs" loading="lazy" />
-        <a class="live-tag" href="https://www.neovarchlabs.web.id" target="_blank" rel="noopener">live</a>
+      <div class="qris">
+        <div style="font-size:9.5px;color:var(--mute)">INVOICE · NVL-0142</div>
+        <div class="qr"></div>
+        <div>Rp 1.750.000</div>
+        <div class="paid" style="margin-top:5px">✓ LUNAS via QRIS</div>
       </div>
     </Card>
 
