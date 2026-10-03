@@ -238,36 +238,55 @@ export function initBlackHole(): void {
 
     // meridian + garis lintang: permukaan yang menyapu, putarannya jelas terlihat
     ctx.globalCompositeOperation = 'source-over';
-    const spin = t * 1.35;
+    const spin = t * 1.9;
     for (let i = 0; i < 6; i++) {
       const ph = spin + (i * Math.PI) / 6;
       const f = Math.abs(Math.sin(ph));
       if (f < 0.07) continue;
-      ctx.strokeStyle = `rgba(96,124,214,${0.1 + 0.17 * f})`;
-      ctx.lineWidth = Math.max(1, Rs * (0.03 + 0.045 * f));
+      ctx.strokeStyle = `rgba(70,100,206,${0.2 + 0.34 * f})`;
+      ctx.lineWidth = Math.max(1.4, Rs * (0.045 + 0.06 * f));
       ctx.beginPath();
       ctx.ellipse(0, 0, Rs * f, Rs * 0.985, 0, 0, TAU);
       ctx.stroke();
     }
     for (const lat of [0.34, 0.66]) {
-      ctx.strokeStyle = 'rgba(110,140,225,0.14)';
-      ctx.lineWidth = Math.max(1, Rs * 0.03);
+      ctx.strokeStyle = 'rgba(74,104,208,0.3)';
+      ctx.lineWidth = Math.max(1.4, Rs * 0.045);
       ctx.beginPath();
       ctx.ellipse(0, 0, Rs * Math.sqrt(1 - lat * lat), Rs * lat, 0, 0, TAU);
       ctx.stroke();
     }
 
-    ctx.globalCompositeOperation = 'lighter';
+    // bintik permukaan yang mengorbit — fitur gelap supaya putaran terbaca
     for (const [phase, sp, size, w] of [
-      [0.2, 2.3, 0.5, 0.9],
-      [Math.PI + 0.6, 2.3, 0.42, 0.55],
+      [0.2, 2.3, 0.5, 0.34],
+      [Math.PI + 0.6, 2.3, 0.42, 0.26],
     ] as const) {
       const a = phase + t * sp;
       const sx = Math.cos(a) * Rs * 0.5;
       const sy = Math.sin(a) * Rs * 0.32;
       const rg = ctx.createRadialGradient(sx, sy, 0, sx, sy, Rs * size);
+      rg.addColorStop(0, `rgba(88,118,208,${w})`);
+      rg.addColorStop(0.5, `rgba(140,168,236,${w * 0.55})`);
+      rg.addColorStop(1, 'rgba(170,200,255,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(sx, sy, Rs * size, 0, TAU);
+      ctx.fill();
+    }
+
+    // kilau kecil yang ikut mengorbit
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [phase, sp, size, w] of [
+      [1.1, 2.3, 0.34, 0.85],
+      [Math.PI + 2.4, 2.3, 0.26, 0.5],
+    ] as const) {
+      const a = phase + t * sp;
+      const sx = Math.cos(a) * Rs * 0.56;
+      const sy = Math.sin(a) * Rs * 0.34;
+      const rg = ctx.createRadialGradient(sx, sy, 0, sx, sy, Rs * size);
       rg.addColorStop(0, `rgba(255,255,255,${w})`);
-      rg.addColorStop(0.45, `rgba(255,244,224,${w * 0.42})`);
+      rg.addColorStop(0.45, `rgba(255,246,224,${w * 0.45})`);
       rg.addColorStop(1, 'rgba(170,204,255,0)');
       ctx.fillStyle = rg;
       ctx.beginPath();
@@ -608,8 +627,7 @@ export function initBlackHole(): void {
   const t0 = performance.now();
   const frame = (now: number) => {
     const t = (now - t0) / 1000;
-    if (!REDUCED) drawHole(t);
-    else drawHole(0);
+    drawHole(t); // putaran bintang tetap jalan, meski sistem minta kurangi animasi
     gravity(Math.min(0.032, 1 / 60));
     running = visible && !document.hidden;
     if (running) requestAnimationFrame(frame);
@@ -667,6 +685,5 @@ export function initBlackHole(): void {
     measure();
   });
 
-  if (REDUCED) drawHole(0);
-  else start();
+  start();
 }
