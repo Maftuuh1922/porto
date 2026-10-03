@@ -201,7 +201,7 @@ export function initBlackHole(): void {
     ctx.translate(cx, cy);
     ctx.rotate(ROLL + Math.PI / 2 + Math.sin(t * 0.35) * 0.05 + Math.sin(t * 1.1) * 0.018);
     ctx.globalCompositeOperation = 'lighter';
-    const beamLen = Rs * 3.5;
+    const beamLen = Rs * 2.9; // dipangkas dari 3.5: kanvas cuma 337px, biar dua pancaran muat & simetris
     const flick = 0.86 + 0.14 * Math.sin(t * 4.7) * Math.sin(t * 1.9 + 1.2);
     const quad = (w0: number, w1: number, dir: number, len: number) => {
       ctx.beginPath();
