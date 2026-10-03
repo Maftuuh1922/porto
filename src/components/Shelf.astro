@@ -21,6 +21,7 @@ const { label, caption } = Astro.props;
             stroke-linecap="round" stroke-linejoin="round"></path></svg
         >
       </button>
+      <span class="shelf-pos" data-pos aria-hidden="true">1/1</span>
     </div>
   </div>
 </section>
@@ -30,6 +31,7 @@ const { label, caption } = Astro.props;
     const track = shelf.querySelector('.shelf-track') as HTMLElement;
     const btns = shelf.querySelectorAll<HTMLButtonElement>('.shelf-btn');
     const nav = shelf.querySelector('.shelf-nav') as HTMLElement;
+    const pos = shelf.querySelector('[data-pos]') as HTMLElement | null;
     const step = () => (track.querySelector('.card') as HTMLElement).getBoundingClientRect().width + 16;
     btns.forEach((b) => b.addEventListener('click', () =>
       track.scrollBy({ left: Number(b.dataset.dir) * step(), behavior: 'smooth' })));
@@ -38,6 +40,12 @@ const { label, caption } = Astro.props;
       btns[0].disabled = track.scrollLeft <= 2;
       btns[1].disabled = track.scrollLeft >= max;
       if (max <= 0) nav.style.display = 'none';
+      if (pos) {
+        const s = step() || 1;
+        const total = Math.max(1, Math.ceil(max / s) + 1);
+        const idx = Math.min(total, Math.max(1, Math.round(track.scrollLeft / s) + 1));
+        pos.textContent = `${idx}/${total}`;
+      }
     };
     track.addEventListener('scroll', sync, { passive: true });
     addEventListener('resize', sync);

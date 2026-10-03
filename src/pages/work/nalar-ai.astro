@@ -1,0 +1,73 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const fakta = [
+  ['Peran', 'Perancang & pengembang'],
+  ['Tumpukan', 'TypeScript, Next.js, RAG'],
+  ['Status', 'Landing page live di Vercel'],
+  ['Sumber', 'github.com/Maftuuh1922/Nalar.Ai'],
+];
+---
+<Base title="Studi kasus Nalar.Ai · Muhammad Maftuh" active="work">
+  <section class="prose">
+    <p class="label">Studi kasus</p>
+    <h1 class="case-title">Nalar.Ai</h1>
+    <p class="case-lead">
+      Asisten AI untuk edukasi yang menjawab dengan sitasi, bukan tebakan. Pertanyaan siswa dijawab
+      dari dokumen yang benar-benar dirujuk, lengkap dengan penunjuk sumbernya.
+    </p>
+  </section>
+
+  <section class="block">
+    <dl class="case-meta">
+      {
+        fakta.map(([k, v]) => (
+          <div>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="block prose">
+    <p class="label">Masalah</p>
+    <p>
+      Jawaban model bahasa untuk materi pelajaran mudah terdengar meyakinkan walau salah, dan guru
+      tidak punya waktu memeriksa ulang setiap jawaban. Yang dibutuhkan adalah jawaban yang
+      menunjukkan dari mana ia diambil.
+    </p>
+
+    <p class="label">Pendekatan</p>
+    <p>
+      Alur RAG: dokumen dipecah, diindeks, lalu bagian yang paling relevan dipilih untuk tiap
+      pertanyaan. Jawaban disusun hanya dari potongan yang lolos ambang kemiripan, dan setiap
+      klaim ditautkan ke berkas serta halaman aslinya — empat dokumen dirujuk untuk satu jawaban
+      pada demo di halaman work.
+    </p>
+
+    <p class="label">Yang saya kerjakan</p>
+    <p>
+      Perancangan alur retrieval, pemilihan model, antarmuka percakapan, sampai halaman promosi
+      yang kini berjalan di Vercel. Basis kode ditulis dalam TypeScript agar logika retrieval
+      tetap bisa diuji terpisah dari antarmuka.
+    </p>
+
+    <p class="label">Hasil</p>
+    <p>
+      Jawaban singkat yang bisa diperiksa ulang dalam hitungan detik: siswa melihat sumbernya,
+      guru tidak perlu menebak. Halaman demo langsungnya bisa dibuka lewat tombol di bawah.
+    </p>
+  </section>
+
+  <section class="block case-actions">
+    <a class="btn-cv" href="https://landingpage-kappa-eight.vercel.app/" target="_blank" rel="noopener">
+      Buka situs live <span aria-hidden="true">↗</span>
+    </a>
+    <a class="btn-cv btn-ghost" href="https://github.com/Maftuuh1922/Nalar.Ai" target="_blank" rel="noopener">
+      Lihat repositori <span aria-hidden="true">↗</span>
+    </a>
+    <a class="btn-cv btn-ghost" href="/work">← Kembali ke work</a>
+  </section>
+</Base>

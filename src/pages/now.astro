@@ -1,9 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
+
+const diperbarui = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
 <Base title="Now · Muhammad Maftuh" active="now">
   <section class="prose">
-    <p class="label">Terakhir diperbarui Oktober 2026</p>
+    <p class="label">Terakhir diperbarui {diperbarui}</p>
     <p>
       Menjalankan <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a> — situs
       agensi dengan pembayaran QRIS dan tagihan PDF yang dibuat di sisi server.
@@ -20,8 +22,8 @@ import Base from '../layouts/Base.astro';
     </p>
     <p>
       Ingin ngobrol soal pengembangan web, AI, atau sesuatu yang menurut Anda menarik? Tulis saja di
-      <a class="link" href="https://github.com/Maftuuh1922">github</a> atau
-      <a class="link" href="https://www.linkedin.com/in/muhammad-maftuh-798331386">linkedin</a>.
+      <a class="link" href="/contact">halaman kontak</a> — email, GitHub, Hugging Face, dan LinkedIn
+      ada di sana, lengkap dengan CV yang bisa diunduh.
     </p>
   </section>
 </Base>

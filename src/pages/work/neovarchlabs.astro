@@ -1,0 +1,75 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const fakta = [
+  ['Peran', 'Pemilik & pengembang'],
+  ['Tumpukan', 'Next.js, Turso, pdfkit'],
+  ['Status', 'Produksi — neovarchlabs.web.id'],
+  ['Pembayaran', 'QRIS dinamis + notifikasi Telegram'],
+];
+---
+<Base title="Studi kasus NeovarchLabs · Muhammad Maftuh" active="work">
+  <section class="prose">
+    <p class="label">Studi kasus</p>
+    <h1 class="case-title">NeovarchLabs</h1>
+    <p class="case-lead">
+      Situs agensi kecil yang urusannya tidak berhenti di halaman depan: pemesanan, tagihan QRIS,
+      dan arsip invoice harus jalan sendiri tanpa campur tangan manual.
+    </p>
+  </section>
+
+  <section class="block">
+    <dl class="case-meta">
+      {
+        fakta.map(([k, v]) => (
+          <div>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="block prose">
+    <p class="label">Masalah</p>
+    <p>
+      Studio kecil kehilangan waktu pada pekerjaan klerikal: menagih lewat chat, membuat invoice
+      satu per satu, dan mencatat pembayaran yang masuk lewat kanal berbeda-beda. Satu pembayaran
+      yang terlewat langsung terasa.
+    </p>
+
+    <p class="label">Pendekatan</p>
+    <p>
+      Satu sistem yang menutup rantainya dari ujung ke ujung. Pesanan tercatat di database Turso,
+      QRIS dibuat dinamis sesuai nominal tagihan, dan ketika pembayaran terverifikasi sistem
+      menandai lunas, membuat PDF invoice di sisi server dengan pdfkit, lalu mengirim notifikasi
+      ke grup Telegram. Konten halaman depan ikut disimpan di database sehingga bisa diubah tanpa
+      deploy ulang.
+    </p>
+
+    <p class="label">Yang saya kerjakan</p>
+    <p>
+      Seluruhnya: rancangan skema data, alur autentikasi, generator QRIS dan PDF, webhook
+      pembayaran, sampai notifikasi. Saya juga menulis alur login Google dengan fallback khusus
+      lingkungan pengembangan supaya tim bisa menguji tanpa kredensial produksi.
+    </p>
+
+    <p class="label">Hasil</p>
+    <p>
+      Tagihan terkirim dan terbayar tanpa spreadsheet: pelanggan memindai QRIS, sistem mencatat,
+      invoice PDF tersimpan, notifikasi masuk. Semua berjalan di produksi pada
+      neovarchlabs.web.id.
+    </p>
+  </section>
+
+  <section class="block case-actions">
+    <a class="btn-cv" href="https://www.neovarchlabs.web.id" target="_blank" rel="noopener">
+      Buka situs live <span aria-hidden="true">↗</span>
+    </a>
+    <a class="btn-cv btn-ghost" href="https://github.com/Maftuuh1922" target="_blank" rel="noopener">
+      GitHub saya <span aria-hidden="true">↗</span>
+    </a>
+    <a class="btn-cv btn-ghost" href="/work">← Kembali ke work</a>
+  </section>
+</Base>

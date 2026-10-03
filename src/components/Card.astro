@@ -1,7 +1,7 @@
 ---
-const { name, href, desc, note } = Astro.props;
+const { name, href, desc, note, tags = '' } = Astro.props;
 ---
-<figure class="card">
+<figure class="card" data-tags={tags}>
   <div class="card-face" role="group">
     <slot />
     <p class="card-note">{note}</p>

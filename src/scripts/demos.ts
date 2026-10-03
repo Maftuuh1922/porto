@@ -218,14 +218,11 @@ export function markdown(): void {
 
 /** Hugging Face — model / space / dataset yang dihitung naik */
 export function huggingface(): void {
-  const items: [string, number][] = [
-    ['hf-models', 8],
-    ['hf-spaces', 5],
-    ['hf-data', 1],
-  ];
-  for (const [id, target] of items) {
+  const fallback: Record<string, number> = { 'hf-models': 8, 'hf-spaces': 5, 'hf-data': 1 };
+  for (const id of ['hf-models', 'hf-spaces', 'hf-data']) {
     const el = $(id);
     if (!el) continue;
+    const target = Number(el.dataset.target || fallback[id] || 0);
     let v = 0;
     const step = Math.max(1, Math.round(target / 14));
     const t = setInterval(() => {

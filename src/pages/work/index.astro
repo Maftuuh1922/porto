@@ -1,20 +1,44 @@
 ---
-import Base from '../layouts/Base.astro';
-import Shelf from '../components/Shelf.astro';
-import Card from '../components/Card.astro';
+import Base from '../../layouts/Base.astro';
+import Shelf from '../../components/Shelf.astro';
+import Card from '../../components/Card.astro';
+import { fetchStats } from '../../lib/stats';
+
+const { stats } = await fetchStats();
+
+const filter = [
+  { v: 'all', l: 'Semua' },
+  { v: 'web', l: 'Web' },
+  { v: 'ai', l: 'AI' },
+  { v: 'ext', l: 'Ekstensi' },
+  { v: 'mobile', l: 'Mobile' },
+  { v: 'data', l: 'Data' },
+];
 ---
 <Base title="Work · Muhammad Maftuh" active="work">
   <section class="prose">
     <p>
       Beberapa yang saya bangun — tiap kartu punya demo yang benar-benar berjalan di dalamnya, bisa
-      diklik. Repositori dan tumpukan teknologi saya ada di bawah.
+      diklik. Dua kartu teratas membuka <a class="link" href="/work/nalar-ai">studi kasus</a>
+      yang ditulis lebih lengkap. Repositori dan tumpukan teknologi saya ada di bawah.
     </p>
   </section>
+
+  <div class="filters" role="group" aria-label="Saring karya">
+    {
+      filter.map((f) => (
+        <button type="button" class="filter-btn" data-filter={f.v} aria-pressed={f.v === 'all'}>
+          {f.l}
+        </button>
+      ))
+    }
+  </div>
 
   <Shelf label="Karya" caption="Karya pilihan">
     <Card
       name="Nalar.Ai"
-      href="https://github.com/Maftuuh1922/Nalar.Ai"
+      href="/work/nalar-ai"
+      tags="ai web"
       desc="asisten AI edukasi · RAG &amp; analisis dokumen · TypeScript"
       note="situs live · landing page resmi"
     >
@@ -31,6 +55,7 @@ import Card from '../components/Card.astro';
     <Card
       name="Pagarnet"
       href="https://github.com/Maftuuh1922/Pagarnet"
+      tags="ext"
       desc="ekstensi anti-judol · HTML, JS"
       note="blokir real-time · tanpa izin tambahan"
     >
@@ -49,6 +74,7 @@ import Card from '../components/Card.astro';
     <Card
       name="BatikLens"
       href="https://github.com/Maftuuh1922/batiklens-ai-powered-heritage-explorer"
+      tags="ai web"
       desc="eksplorasi batik bertenaga AI · TypeScript"
       note="demo langsung dari situs live"
     >
@@ -65,6 +91,7 @@ import Card from '../components/Card.astro';
     <Card
       name="Wastra.ai"
       href="https://github.com/Maftuuh1922/wastra"
+      tags="ai web"
       desc="kenali, pelajari &amp; kreasi motif batik Nusantara · TypeScript"
       note="situs live · wastra-plum.vercel.app"
     >
@@ -80,9 +107,10 @@ import Card from '../components/Card.astro';
 
     <Card
       name="NeovarchLabs"
-      href="https://www.neovarchlabs.web.id"
+      href="/work/neovarchlabs"
+      tags="web"
       desc="situs agensi + tagihan QRIS · Next.js"
-      note="PDF invoice dibuat di sisi server"
+      note="studi kasus · PDF invoice di sisi server"
     >
       <div class="qris">
         <div style="font-size:9.5px;color:var(--mute)">INVOICE · NVL-0142</div>
@@ -95,6 +123,7 @@ import Card from '../components/Card.astro';
     <Card
       name="aplikasi_berita"
       href="https://github.com/Maftuuh1922/aplikasi_berita"
+      tags="mobile"
       desc="klien berita · Dart"
       note="gulir otomatis · Flutter"
     >
@@ -104,6 +133,7 @@ import Card from '../components/Card.astro';
     <Card
       name="sales-management"
       href="https://github.com/Maftuuh1922/sales-management"
+      tags="data"
       desc="manajemen penjualan · Dart"
       note="omzet minggu ini"
     >
@@ -118,16 +148,16 @@ import Card from '../components/Card.astro';
     <Card
       name="Hugging Face"
       href="https://huggingface.co/maftuh-main"
-      desc="model, dataset & Space · QLoRA"
+      desc={`model, dataset & Space · QLoRA · ${stats.models} model`}
       note="Domain Expert AI · batik, NLP"
     >
       <div class="sheet">
         <h4>maftuh-main</h4>
-        <div class="row"><span>model</span><b id="hf-models">0</b></div>
+        <div class="row"><span>model</span><b id="hf-models" data-target={stats.models}>0</b></div>
         <div class="bar"><i class="lang" data-v="100"></i></div>
-        <div class="row"><span>Space</span><b id="hf-spaces">0</b></div>
+        <div class="row"><span>Space</span><b id="hf-spaces" data-target={stats.spaces}>0</b></div>
         <div class="bar"><i class="lang" data-v="62"></i></div>
-        <div class="row"><span>dataset</span><b id="hf-data">0</b></div>
+        <div class="row"><span>dataset</span><b id="hf-data" data-target={stats.datasets}>0</b></div>
         <div class="bar"><i class="lang" data-v="14"></i></div>
         <div class="row" style="margin-top:6px"><span>andalan</span><b>batik-qwen1.5b</b></div>
         <div class="row"><span>teknik</span><b>QLoRA · sintetis</b></div>
@@ -137,11 +167,11 @@ import Card from '../components/Card.astro';
     <Card
       name="Profil GitHub"
       href="https://github.com/Maftuuh1922?tab=repositories"
-      desc="Maftuuh1922 · 10 followers"
+      desc={`Maftuuh1922 · ${stats.followers} followers`}
       note="sejak 22 September 2023"
     >
       <div class="sheet">
-        <h4>48 repositori publik</h4>
+        <h4>{stats.repos} repositori publik</h4>
         <div class="row"><span>TypeScript</span><b>15</b></div><div class="bar"><i class="lang" data-v="100"></i></div>
         <div class="row"><span>JavaScript</span><b>7</b></div><div class="bar"><i class="lang" data-v="47"></i></div>
         <div class="row"><span>Dart</span><b>5</b></div><div class="bar"><i class="lang" data-v="33"></i></div>
@@ -205,6 +235,26 @@ import Card from '../components/Card.astro';
 </Base>
 
 <script>
-  import { startWorkDemos } from '../scripts/demos';
+  import { startWorkDemos } from '../../scripts/demos';
   startWorkDemos();
+
+  /* saring karya per tag */
+  const track = document.querySelectorAll<HTMLElement>('.shelf-track')[0];
+  const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  if (track) {
+    const cards = track.querySelectorAll<HTMLElement>('.card');
+    btns.forEach((b) =>
+      b.addEventListener('click', () => {
+        const f = b.dataset.filter ?? 'all';
+        btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        cards.forEach((c) => {
+          const tags = (c.dataset.tags ?? '').split(/\s+/);
+          c.hidden = !(f === 'all' || tags.includes(f));
+        });
+        track.scrollTo({ left: 0, behavior: 'smooth' });
+        /* rak menghitung ulang panah + posisi 1/N */
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 80);
+      }),
+    );
+  }
 </script>

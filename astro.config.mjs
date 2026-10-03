@@ -1,9 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://maftuuh1922.github.io',
+  site: 'https://porto-maftuh.vercel.app',
+  integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],
   },
