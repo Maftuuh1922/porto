@@ -123,7 +123,7 @@ export function initBlackHole(): void {
       let s = i * 7.7 + 3.1;
       for (let k = 0; k < 8; k++) {
         s = (s * 9301 + 49297) % 233280;
-        pat.push(6 + (s / 233280) * 34);
+        pat.push(9 + (s / 233280) * 46);
       }
       dashes.push(pat);
     }
@@ -171,7 +171,7 @@ export function initBlackHole(): void {
       const fall = Math.pow(1 - f, 1.4);
       const alpha = 0.05 + 0.34 * fall;
       const kep = Math.pow(inner / r, 1.5);
-      ring(r, alpha, false, ((outer - inner) / n) * 1.5, t * kep * 90, dashes[i]);
+      ring(r, alpha, false, ((outer - inner) / n) * 1.5, t * kep * 170, dashes[i]);
     }
 
     // pancaran pulsar di kedua sumbu rotasi — tanda bintang ini berputar cepat
@@ -235,6 +235,28 @@ export function initBlackHole(): void {
     ctx.arc(W / 2, H / 2, Rs * 0.995, 0, TAU);
     ctx.clip();
     ctx.translate(W / 2, H / 2);
+
+    // meridian + garis lintang: permukaan yang menyapu, putarannya jelas terlihat
+    ctx.globalCompositeOperation = 'source-over';
+    const spin = t * 1.35;
+    for (let i = 0; i < 6; i++) {
+      const ph = spin + (i * Math.PI) / 6;
+      const f = Math.abs(Math.sin(ph));
+      if (f < 0.07) continue;
+      ctx.strokeStyle = `rgba(96,124,214,${0.1 + 0.17 * f})`;
+      ctx.lineWidth = Math.max(1, Rs * (0.03 + 0.045 * f));
+      ctx.beginPath();
+      ctx.ellipse(0, 0, Rs * f, Rs * 0.985, 0, 0, TAU);
+      ctx.stroke();
+    }
+    for (const lat of [0.34, 0.66]) {
+      ctx.strokeStyle = 'rgba(110,140,225,0.14)';
+      ctx.lineWidth = Math.max(1, Rs * 0.03);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, Rs * Math.sqrt(1 - lat * lat), Rs * lat, 0, 0, TAU);
+      ctx.stroke();
+    }
+
     ctx.globalCompositeOperation = 'lighter';
     for (const [phase, sp, size, w] of [
       [0.2, 2.3, 0.5, 0.9],
@@ -291,7 +313,7 @@ export function initBlackHole(): void {
       const fall = Math.pow(1 - f, 1.4);
       const alpha = 0.07 + 0.46 * fall;
       const kep = Math.pow(inner / r, 1.5);
-      ring(r, alpha, true, ((outer - inner) / n) * 1.6, t * kep * 90, dashes[i]);
+      ring(r, alpha, true, ((outer - inner) / n) * 1.6, t * kep * 170, dashes[i]);
     }
 
     // cahaya yang lolos di tepi bayangan
