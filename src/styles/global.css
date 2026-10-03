@@ -24,9 +24,10 @@ html[data-theme=dark] .feed,html[data-theme=dark] .strip,html[data-theme=dark] .
 html[data-theme=dark] .sheet,html[data-theme=dark] .live-frame{
   --ink:#121214;--text:#636268;--mute:#6b6a72;--rule:#e6e5e2;--card:#f1f1ef;--accent:#6b46c1}
 html[data-theme=dark]{background:var(--bg);color-scheme:dark}
-/* hero: di mode gelap ilustrasinya pindah ke ukiran Hermes */
+/* hero: di mode gelap ilustrasinya pindah ke ukiran Hermes
+   (background-position TIDAK ditimpa — biar sejajar dengan mode terang) */
 html[data-theme=dark] .page-bg{background-image:url('/bg/hermes-dark.webp')!important;
-  background-position:center 100%;opacity:.95;filter:brightness(.72) saturate(.92)}
+  opacity:.9;filter:brightness(.72) saturate(.92)}
 html[data-theme=dark] .filter-btn[aria-pressed="true"],html[data-theme=dark] .btn-cv{color:#0d0d10}
 html[data-theme=dark] .contact-row:hover{background:#ffffff10}
 html[data-theme=dark] .spec{background:#1d1d23}
@@ -48,7 +49,7 @@ em{font-style:italic;color:var(--ink)}
 
 /* ---- latar ilustrasi (index): di balik navbar sampai hero, bawahnya memudar menyatu ---- */
 .page-bg{position:absolute;top:0;left:0;right:0;height:min(660px,88vh);z-index:-1;pointer-events:none;
-  background-position:center 42%;background-size:cover;background-repeat:no-repeat;opacity:.9;
+  background-position:center 70%;background-size:cover;background-repeat:no-repeat;opacity:.9;
   -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%)}
 /* teks navbar putih polos di atas ilustrasi, tanpa efek bayangan */
