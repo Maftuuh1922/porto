@@ -1,5 +1,7 @@
-/* Lubang hitam hero + fisika teks kesedot + drag per obyek.
-   Dua kanvas: #bh-canvas (lubang hitamnya), #bh-rays (sinar cahaya yang ditekuk). */
+/* Hero bintang neutron + fisika teks kesedot + drag per obyek.
+   Dua kanvas: #bh-canvas (bintang neutronnya), #bh-rays (sinar cahaya yang ditekuk).
+   Bedanya dengan lubang hitam: ada permukaan padat yang menyala, jadi sinar yang
+   "tertangkap" di sini berarti menembus permukaan bintang. */
 
 const TAU = Math.PI * 2;
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -145,9 +147,9 @@ export function initBlackHole(): void {
     // Doppler: sisi yang mendekat lebih terang
     const g = ctx.createLinearGradient(-rx, 0, rx, 0);
     const inner = 1 - (r - Ri()) / (Ro() - Ri());
-    g.addColorStop(0, `rgba(214,226,255,${alpha})`);
-    g.addColorStop(0.45, `rgba(150,176,255,${alpha * 0.72})`);
-    g.addColorStop(1, `rgba(46,70,170,${alpha * 0.3 * inner + 0.05})`);
+    g.addColorStop(0, `rgba(228,240,255,${alpha})`);
+    g.addColorStop(0.45, `rgba(150,204,255,${alpha * 0.72})`);
+    g.addColorStop(1, `rgba(56,104,214,${alpha * 0.3 * inner + 0.05})`);
     ctx.strokeStyle = g;
     ctx.beginPath();
     ctx.ellipse(0, 0, rx, ry, 0, a0, a1);
@@ -172,35 +174,95 @@ export function initBlackHole(): void {
       ring(r, alpha, false, ((outer - inner) / n) * 1.5, t * kep * 90, dashes[i]);
     }
 
-    // bayangan (shadow) — inti gelap sepenuhnya
-    ctx.globalCompositeOperation = 'source-over';
-    const sh = ctx.createRadialGradient(W / 2, H / 2, Rs * 0.2, W / 2, H / 2, Rs);
-    sh.addColorStop(0, '#000');
-    sh.addColorStop(0.82, '#000');
-    sh.addColorStop(1, 'rgba(4,4,10,0.98)');
-    ctx.fillStyle = sh;
+    // pancaran pulsar di kedua sumbu rotasi — tanda bintang ini berputar cepat
+    ctx.save();
+    ctx.translate(W / 2, H / 2);
+    ctx.rotate(ROLL + Math.PI / 2 + Math.sin(t * 0.35) * 0.05);
+    ctx.globalCompositeOperation = 'lighter';
+    const beamLen = Rs * 3.2;
+    for (const dir of [1, -1]) {
+      const bg = ctx.createLinearGradient(0, 0, 0, dir * beamLen);
+      bg.addColorStop(0, 'rgba(232,242,255,0.5)');
+      bg.addColorStop(0.35, 'rgba(150,192,255,0.18)');
+      bg.addColorStop(1, 'rgba(90,130,255,0)');
+      ctx.fillStyle = bg;
+      ctx.beginPath();
+      ctx.moveTo(-Rs * 0.17, 0);
+      ctx.lineTo(Rs * 0.17, 0);
+      ctx.lineTo(Rs * 0.66, dir * beamLen);
+      ctx.lineTo(-Rs * 0.66, dir * beamLen);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // pendar bintang neutron (denyut pelan)
+    ctx.globalCompositeOperation = 'lighter';
+    const pulse = 0.85 + 0.15 * Math.sin(t * 2.1);
+    const bloom = ctx.createRadialGradient(W / 2, H / 2, Rs * 0.55, W / 2, H / 2, Rs * 3.3);
+    bloom.addColorStop(0, `rgba(224,238,255,${0.6 * pulse})`);
+    bloom.addColorStop(0.3, `rgba(146,182,255,${0.22 * pulse})`);
+    bloom.addColorStop(1, 'rgba(70,104,220,0)');
+    ctx.fillStyle = bloom;
     ctx.beginPath();
-    ctx.arc(W / 2, H / 2, Rs, 0, TAU);
+    ctx.arc(W / 2, H / 2, Rs * 3.3, 0, TAU);
     ctx.fill();
 
-    // halo terlentang di atas bayangan (efek pelensaan)
-    ctx.globalCompositeOperation = 'lighter';
+    // halo pelensaan — cahaya di sekitar bintang yang dibengkokkan
     for (let k = 0; k < 3; k++) {
       ctx.beginPath();
-      ctx.strokeStyle = `rgba(140,170,255,${0.26 - k * 0.07})`;
+      ctx.strokeStyle = `rgba(150,186,255,${0.3 - k * 0.08})`;
       ctx.lineWidth = Rs * 0.16;
       ctx.arc(W / 2, H / 2, Rs * (1.14 + k * 0.2), Math.PI, TAU);
       ctx.stroke();
     }
 
-    // cincin foton
+    // permukaan padat bintang neutron: putih menyilaukan di pusat, biru di tepi
+    ctx.globalCompositeOperation = 'source-over';
+    const body = ctx.createRadialGradient(W / 2 - Rs * 0.28, H / 2 - Rs * 0.3, Rs * 0.08, W / 2, H / 2, Rs);
+    body.addColorStop(0, '#ffffff');
+    body.addColorStop(0.42, '#f2f6ff');
+    body.addColorStop(0.74, '#ccdbff');
+    body.addColorStop(1, '#7fa0f2');
+    ctx.fillStyle = body;
     ctx.beginPath();
-    ctx.strokeStyle = 'rgba(232,240,255,0.95)';
-    ctx.lineWidth = Math.max(1.6, Rs * 0.055);
-    ctx.arc(W / 2, H / 2, Rs * 1.06, 0, TAU);
+    ctx.arc(W / 2, H / 2, Rs, 0, TAU);
+    ctx.fill();
+
+    // dua bintik panas mengorbit di permukaan (lihat putarannya)
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2, Rs * 0.995, 0, TAU);
+    ctx.clip();
+    ctx.translate(W / 2, H / 2);
+    ctx.globalCompositeOperation = 'lighter';
+    for (const [phase, sp, size, w] of [
+      [0.2, 2.3, 0.5, 0.9],
+      [Math.PI + 0.6, 2.3, 0.42, 0.55],
+    ] as const) {
+      const a = phase + t * sp;
+      const sx = Math.cos(a) * Rs * 0.5;
+      const sy = Math.sin(a) * Rs * 0.32;
+      const rg = ctx.createRadialGradient(sx, sy, 0, sx, sy, Rs * size);
+      rg.addColorStop(0, `rgba(255,255,255,${w})`);
+      rg.addColorStop(0.45, `rgba(255,244,224,${w * 0.42})`);
+      rg.addColorStop(1, 'rgba(170,204,255,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(sx, sy, Rs * size, 0, TAU);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // limb: tepi bintang yang tajam (lihat dari jauh)
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(236,244,255,0.95)';
+    ctx.lineWidth = Math.max(1.6, Rs * 0.05);
+    ctx.arc(W / 2, H / 2, Rs * 1.01, 0, TAU);
     ctx.stroke();
 
-    // dua simpul panas yang mengorbit — tanda "ini berputar"
+    // dua simpul panas yang mengorbit di piringan — tanda "ini berputar"
     for (const [rad, phase, sp, w] of [
       [inner * 1.3, 0.4, 1.7, 0.5],
       [inner * 1.75, 2.5, 1.1, 0.38],
@@ -211,8 +273,8 @@ export function initBlackHole(): void {
       ctx.globalCompositeOperation = 'lighter';
       const a = phase + t * sp;
       const grad = ctx.createLinearGradient(-rad, 0, rad, 0);
-      grad.addColorStop(0, `rgba(255,250,240,${w})`);
-      grad.addColorStop(1, `rgba(255,214,150,${w * 0.5})`);
+      grad.addColorStop(0, `rgba(255,255,255,${w})`);
+      grad.addColorStop(1, `rgba(168,214,255,${w * 0.55})`);
       ctx.strokeStyle = grad;
       ctx.lineWidth = Math.max(2, rad * KY * 1.7);
       ctx.lineCap = 'round';
@@ -276,8 +338,8 @@ export function initBlackHole(): void {
       if (readout) {
         readout.classList.add('is-live');
         readout.textContent = ray.captured
-          ? `b = ${Math.abs(ray.b).toFixed(2)} r_s < ${SHELL.toFixed(2)} r_s · tertangkap`
-          : `b = ${Math.abs(ray.b).toFixed(2)} r_s · ditekuk ${ray.defl.toFixed(0)}°`;
+          ? `b = ${Math.abs(ray.b).toFixed(2)} R < ${SHELL.toFixed(2)} R · menembus permukaan`
+          : `b = ${Math.abs(ray.b).toFixed(2)} R · ditekuk ${ray.defl.toFixed(0)}°`;
       }
       void live;
     }
