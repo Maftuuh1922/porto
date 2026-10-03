@@ -175,14 +175,21 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 .gw-keep{white-space:nowrap}
 a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offset:3px}
 
-/* ---- plate (index): hero paling bawah, lebar penuh sebagai latar ---- */
-.page>.wide.plate{margin-top:14px;width:100vw;margin-inline:calc(50% - 50vw)}
-.plate{position:relative;overflow:hidden;background:#0d1b3d}
-.plate img{display:block;width:100%;height:clamp(240px,46vw,560px);object-fit:cover;object-position:center 38%;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 104px);
-  mask-image:linear-gradient(to bottom,transparent 0,#000 104px)}
-.plate figcaption{font-family:var(--mono);font-size:var(--small);color:var(--mute);
-  text-align:center;padding:10px 0 0;border:0;letter-spacing:-.01em}
+/* ---- plate (index): latar dari tepi atas card sampai "salam kenal" ---- */
+.plate-block{position:relative}
+.plate-block > section{position:relative;z-index:1}
+.plate{position:absolute;top:0;bottom:-190px;left:calc(50% - 50vw);width:100vw;
+  overflow:hidden;z-index:0;background:#0d1b3d;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 96px);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 96px)}
+.plate img{position:absolute;inset:0;display:block;width:100%;height:100%;
+  object-fit:cover;object-position:center 42%}
+.plate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:190px;
+  background:linear-gradient(to bottom,transparent 0,rgba(5,9,24,.38) 55%,rgba(5,9,24,.88) 100%)}
+body:has(.plate-block) .site-foot{position:relative;z-index:1;margin-top:72px;color:#f4f3f0}
+body:has(.plate-block) .site-foot .ticker{color:#dedcd7}
+body:has(.plate-block) .shelf-pos{color:#e8e6e1;text-shadow:0 1px 3px rgba(5,9,24,.8)}
+body:has(.plate-block) .site-foot{color:#f4f3f0;text-shadow:0 1px 3px rgba(5,9,24,.8)}
 
 /* ---- meja (about): benda telanjang di atas latar polos, tanpa kartu ---- */
 .desk-mat{position:relative;width:min(var(--wide),100vw - 2rem);margin-inline:auto;min-height:560px}

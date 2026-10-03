@@ -39,7 +39,19 @@ import Card from '../components/Card.astro';
     </p>
   </section>
 
-  <Shelf label="Yang sedang saya kerjakan" caption="Sedang dikerjakan">
+  <div class="plate-block">
+    <figure class="plate">
+      <img
+        src="/plate.webp"
+        alt="Ukiran pemandangan runtuhan klasik: gerbang berlengkung dan kolom di kiri, kuil di kanan, dengan latar pegunungan bersalju dan danau"
+        width="1670"
+        height="941"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+
+    <Shelf label="Yang sedang saya kerjakan" caption="Sedang dikerjakan">
     <Card
       name="NeovarchLabs"
       href="https://www.neovarchlabs.web.id"
@@ -100,19 +112,8 @@ import Card from '../components/Card.astro';
         <div class="bar"><i id="r3"></i></div>
       </div>
     </Card>
-  </Shelf>
-
-  <figure class="wide plate plate-hero">
-    <img
-      src="/plate.webp"
-      alt="Ukiran pemandangan runtuhan klasik: gerbang berlengkung dan kolom di kiri, kuil di kanan, dengan latar pegunungan bersalju dan danau"
-      width="1670"
-      height="941"
-      loading="lazy"
-      decoding="async"
-    />
-    <figcaption>plate · runtuhan klasik — ukiran biru &amp; krem</figcaption>
-  </figure>
+    </Shelf>
+  </div>
 </Base>
 
 <script>
