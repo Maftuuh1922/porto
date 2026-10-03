@@ -200,7 +200,7 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 
 /* ---- hero (index): lubang hitam ---- */
-.hero-hole{width:min(var(--wide),100vw - 2rem);margin:-28px auto 0}
+.hero-hole{width:min(var(--wide),100vw - 2rem);margin:-28px auto 0;padding:0 .8rem}
 .hero-hole .blackhole-object{z-index:30;width:100%;line-height:0;position:relative;
   touch-action:none;cursor:grab;user-select:none;
   transform:translate(var(--dx,0px),var(--dy,0px));will-change:transform}
