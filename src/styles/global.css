@@ -23,9 +23,9 @@ em{font-style:italic;color:var(--ink)}
   background-position:center 42%;background-size:cover;background-repeat:no-repeat;opacity:.9;
   -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%)}
-/* bagian atas biar penuh (tanpa selimut), navbar dibuat kontras lewat bayangan teks */
-body:has(.page-bg) .site-nav a{color:#3f3e47;text-shadow:0 1px 2px rgba(250,250,249,.85),0 0 6px rgba(250,250,249,.7)}
-body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:var(--ink)}
+/* teks navbar putih polos di atas ilustrasi, tanpa efek bayangan */
+body:has(.page-bg) .site-nav a{color:#fff}
+body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:#fff}
 
 /* ---- nav ---- */
 .site-nav{justify-content:center;gap:22px;margin-bottom:56px;padding-top:36px;display:flex}
