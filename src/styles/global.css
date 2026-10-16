@@ -24,7 +24,7 @@ html[data-theme=dark] .feed,html[data-theme=dark] .strip,html[data-theme=dark] .
 html[data-theme=dark] .sheet,html[data-theme=dark] .live-frame{
   --ink:#121214;--text:#636268;--mute:#6b6a72;--rule:#e6e5e2;--card:#f1f1ef;--accent:#6b46c1}
 html[data-theme=dark]{background:var(--bg);color-scheme:dark}
-/* transisi hero (terang↔gelap) sekarang ditangani layer cross-fade di .page-bg::before/::after */
+/* transisi hero (terang↔gelap) ditangani dua <img> di .page-bg (cross-fade opacity) */
 html[data-theme=dark] .filter-btn[aria-pressed="true"],html[data-theme=dark] .btn-cv{color:#0d0d10}
 html[data-theme=dark] .contact-row:hover{background:#ffffff10}
 html[data-theme=dark] .spec{background:#1d1d23}
@@ -46,33 +46,30 @@ p{margin:0}
 p+p{margin-top:16px}
 em{font-style:italic;color:var(--ink)}
 
-/* ---- latar ilustrasi (index): dua layer (terang + gelap) cross-fade saat ganti tema.
-   Kedua layer memakai ukiran yang sama geometrinya, jadi transisinya mulus.
-   Hanya div .page-bg yang ada di halaman index; layer-nya di ::before (terang)
-   dan ::after (gelap), di-cross-fade via opacity saat data-theme berubah. ---- */
-.page-bg{position:absolute;top:0;left:0;right:0;height:min(660px,88vh);z-index:-1;pointer-events:none;
-  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
-  mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%)}
-.page-bg::before,.page-bg::after{
-  content:"";position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;
-  background-position:center var(--hero-y,70%);
-  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
-  mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
-  transition:opacity .8s cubic-bezier(.4,0,.2,1)}
-.page-bg::before{background-image:url('/art/hero-light-1920.webp');background-image:image-set(url('/art/hero-light-1920.webp') 1x,url('/art/hero-light-3200.webp') 2x);opacity:1}
-.page-bg::after{background-image:url('/art/hero-dark-1920.webp');background-image:image-set(url('/art/hero-dark-1920.webp') 1x,url('/art/hero-dark-3200.webp') 2x);opacity:0}
+/* ---- latar ilustrasi (index): dua <img> (terang + gelap) di-cross-fade saat ganti tema.
+   Dulu memakai background image-set() di ::before/::after dengan mask bertumpuk
+   (induk + pseudo) dan z-index:-1 di bawah body; di Chrome Android mode "Situs
+   desktop" lapisan itu tidak tergambar sama sekali (maskot hilang, tinggal bintang).
+   Sekarang <img> biasa dengan srcset, satu mask saja di kontainer, dan body
+   diberi stacking context sendiri. Lebar gambar minimal 1500px supaya di layar
+   ~980px wajahnya tetap di bawah bintang dan tangannya menggapai. ---- */
+body{isolation:isolate}
+.page-bg{position:absolute;top:0;left:0;right:0;height:min(660px,88vh);z-index:-1;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 58%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0,#000 58%,transparent 100%)}
+.page-bg picture{display:contents}
+.page-bg img{position:absolute;top:0;left:50%;display:block;width:max(100%,1500px);max-width:none;height:auto;
+  transform:translateX(-50%);transition:opacity .8s cubic-bezier(.4,0,.2,1)}
+.page-bg .hero-dark{opacity:0}
+html[data-theme=dark] .page-bg .hero-light{opacity:0}
+html[data-theme=dark] .page-bg .hero-dark{opacity:1}
 @media (max-width:640px){
-  .page-bg::before{background-image:url('/art/hero-light-m-1100.webp');background-image:image-set(url('/art/hero-light-m-700.webp') 1x,url('/art/hero-light-m-1100.webp') 2x)}
-  .page-bg::after{background-image:url('/art/hero-dark-m-1100.webp');background-image:image-set(url('/art/hero-dark-m-700.webp') 1x,url('/art/hero-dark-m-1100.webp') 2x)}
+  .page-bg{height:min(470px,84vh);
+    -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 74%,transparent 100%);
+    mask-image:linear-gradient(to bottom,#000 0,#000 74%,transparent 100%)}
+  .page-bg img{top:-28px;left:0;width:100%;transform:none}
 }
-html[data-theme=dark] .page-bg::before{opacity:0}
-html[data-theme=dark] .page-bg::after{opacity:1}
-/* tanpa animasi: matikan pseudo, gambar langsung di layer utama (satu file per mode) */
-@media (prefers-reduced-motion:reduce){
-  .page-bg::before,.page-bg::after{display:none}
-  .page-bg{background-image:image-set(url('/art/hero-light-1920.webp') 1x,url('/art/hero-light-3200.webp') 2x);background-size:cover;background-position:center var(--hero-y,70%)}
-  html[data-theme=dark] .page-bg{background-image:image-set(url('/art/hero-dark-1920.webp') 1x,url('/art/hero-dark-3200.webp') 2x)}
-}
+@media (prefers-reduced-motion:reduce){.page-bg img{transition:none}}
 /* teks navbar polos di atas ilustrasi: gelap di mode terang, putih di mode gelap */
 body:has(.page-bg) .site-nav a{color:var(--ink)}
 body:has(.page-bg) .site-nav a:hover,body:has(.page-bg) .site-nav a[aria-current=page]{color:var(--ink)}
@@ -252,14 +249,27 @@ html:not([data-theme=dark]) body:has(.page-bg) .gw:not(a .gw){color:#54535c}
 a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offset:3px}
 
 /* ---- plate (index): latar dari tepi atas card sampai "salam kenal" ---- */
-.plate-block{position:relative}
+.plate-block{position:relative;
+  /* ukuran ukiran: lebar penuh (min 1100px), tinggi mengikuti rasio 1920×1246.
+     Ruang kosong di bawah rak = bagian ukiran di bawah lingkaran halo, jadi kartu
+     hanya menutupi langit di atas kepala maskot, tidak pernah wajah/badannya. */
+  --pw:max(100vw,1100px);--ph:calc(var(--pw) * 1246 / 1920);--halo:.25;
+  padding-bottom:max(140px,calc(var(--ph) * (1 - var(--halo)) - 300px))}
 .plate-block > section{position:relative;z-index:1}
-.plate{position:absolute;top:0;bottom:-330px;left:calc(50% - 50vw);width:100vw;
+.plate{position:absolute;bottom:-330px;height:var(--ph);left:calc(50% - 50vw);width:100vw;
   overflow:hidden;z-index:0;background:#5a0b12;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 96px);
   mask-image:linear-gradient(to bottom,transparent 0,#000 96px)}
-.plate img{position:absolute;inset:0;display:block;width:100%;height:100%;
-  object-fit:cover;object-position:50% 0%}
+.plate img{position:absolute;top:0;left:50%;display:block;width:var(--pw);max-width:none;height:100%;
+  transform:translateX(-50%);object-fit:cover;object-position:50% 0%}
+@media (max-width:640px){
+  .plate-block{--pw:100vw;--ph:calc(100vw * 1428 / 700);--halo:.36}
+}
+/* rak di atas ukiran: tetap bisa digeser ke samping, tapi tepi kanannya memudar
+   supaya tidak terlihat seperti terpotong / meluber keluar layar */
+.plate-block .shelf-track{
+  -webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 56px),transparent 100%);
+  mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 56px),transparent 100%)}
 .plate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:220px;
   background:linear-gradient(to bottom,transparent 0,rgba(22,4,8,.42) 55%,rgba(16,3,6,.93) 100%)}
 body:has(.plate-block) .site-foot{position:relative;z-index:1;margin-top:212px;color:#f4f3f0}
@@ -472,7 +482,6 @@ html[data-theme=dark] .pshot-empty{background:repeating-linear-gradient(135deg,t
 @media (max-width:640px){
   .site-nav{gap:16px}
   .site-foot{flex-direction:column;gap:6px}
-  .page-bg{height:min(470px,84vh);background-position:center 26%}
   /* meja di HP: seperti halaman contoh — mat pendek (360px), benda mengecil 62% dan
      tersebar lebih jauh sehingga benda paling bawah tumpah ke atas paragraf */
   .desk-mat{min-height:360px}
@@ -552,19 +561,5 @@ html[data-theme=dark] .about-tools img[src$="nextdotjs.svg"],html[data-theme=dar
   .about-tools{grid-template-columns:1fr}
 }
 
-/* hero: maskot di tengah — tangannya menggapai bintang, wajahnya tepat di bawahnya */
-.page-bg{--hero-y:0%}
-.page-bg,.page-bg::before,.page-bg::after{
-  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 58%,transparent 100%);
-  mask-image:linear-gradient(to bottom,#000 0,#000 58%,transparent 100%)}
-@media (max-width:640px){
-  .page-bg::before,.page-bg::after{background-position:center top}
-  .page-bg,.page-bg::before,.page-bg::after{
-    -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 74%,transparent 100%);
-    mask-image:linear-gradient(to bottom,#000 0,#000 74%,transparent 100%)}
-}
 html[data-theme=dark] .btn-cv.btn-ghost{color:var(--ink)}
 .about-name{white-space:nowrap;font-size:clamp(30px,8.4vw,40px)}
-@media (max-width:640px){
-  .page-bg::before,.page-bg::after{background-position:center -28px}
-}
