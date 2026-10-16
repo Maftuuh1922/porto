@@ -416,7 +416,7 @@ export function initBlackHole(): void {
   /* ---------- loop utama ----------
      - prefers-reduced-motion: bintang digambar diam satu kali; loop hanya hidup
        selama ada yang diseret / kata yang sedang kembali.
-     - laptop lemah: kalau rata-rata frame > 26 ms, pindah ke mode hemat
+     - laptop lemah: kalau rata-rata frame > 20 ms, pindah ke mode hemat
        (dpr 1, partikel separuh, tekstur lebih ringan) dan gambar di 30 fps. */
   let running = false;
   let visible = true;
@@ -425,6 +425,7 @@ export function initBlackHole(): void {
   let slowFrames = 0;
   let lastFrame = 0;
   let skip = false;
+  let frameN = 0;
   const wordsBusy = () => words.some((w) => w.active);
   const frame = (now: number) => {
     const t = (now - t0) / 1000;
@@ -436,7 +437,7 @@ export function initBlackHole(): void {
         drawHole(t);
         const cost = performance.now() - s0;
         ema = ema * 0.92 + Math.max(cost, low ? 0 : gap * 0.5) * 0.08;
-        if (!low && ema > 26) {
+        if (!low && ema > 20) {
           if (++slowFrames > 45) {
             low = true;
             resize();
@@ -444,6 +445,7 @@ export function initBlackHole(): void {
         } else slowFrames = 0;
       }
       if (low) skip = !skip; // 30 fps
+      if ((++frameN & 63) === 0) obj.dataset.q = `${low ? 'hemat' : 'penuh'} ${ema.toFixed(1)}ms`;
     }
     gravity(Math.min(0.032, 1 / 60));
     const keep = REDUCED ? obj.classList.contains('dragging') || wordsBusy() : true;
