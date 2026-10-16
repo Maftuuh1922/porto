@@ -1,0 +1,237 @@
+---
+import Base from '../layouts/Base.astro';
+import { fetchStats } from '../lib/stats';
+import { localePath, t, type Lang } from '../i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const en = lang === 'en';
+const L = (p: string) => localePath(lang, p);
+const { stats, live } = await fetchStats();
+const nf = new Intl.NumberFormat(en ? 'en-US' : 'id-ID');
+
+/* Empat hal yang saya bangun — semuanya ada kartunya di halaman Work */
+const areas = en
+  ? [
+      {
+        k: '01',
+        h: 'AI agents',
+        p: 'Neovarch Agent — an AI agent that runs on your own PC and is controlled from your phone — plus small open-source tools that keep coding agents honest.',
+        tags: ['Neovarch Agent', 'leave-no-trace', 'not-mine', 'catch-22-skill'],
+      },
+      {
+        k: '02',
+        h: 'Web that runs itself',
+        p: 'NeovarchLabs: ordering, QRIS payments through DOKU, and invoices and receipts by email — no admin needed in between.',
+        tags: ['NeovarchLabs', 'Next.js', 'DOKU · QRIS', 'Resend'],
+      },
+      {
+        k: '03',
+        h: 'Linux desktop',
+        p: 'Plugins and a theme for Omarchy, and a way to control the desktop from a phone.',
+        tags: ['Boxtop', 'Neovarch Glass', 'Omarchy Pocket'],
+      },
+      {
+        k: '04',
+        h: 'AI & batik',
+        p: 'Batik models fine-tuned with QLoRA on Hugging Face, and two live sites for recognizing and creating batik motifs.',
+        tags: ['BatikLens', 'Wastra.ai', 'Hugging Face'],
+      },
+    ]
+  : [
+      {
+        k: '01',
+        h: 'Agen AI',
+        p: 'Neovarch Agent — agen AI yang jalan di PC sendiri dan dikendalikan dari HP — plus perkakas kecil open source yang membuat coding agent tetap jujur.',
+        tags: ['Neovarch Agent', 'leave-no-trace', 'not-mine', 'catch-22-skill'],
+      },
+      {
+        k: '02',
+        h: 'Web yang jalan sendiri',
+        p: 'NeovarchLabs: pemesanan, pembayaran QRIS lewat DOKU, serta invoice dan kwitansi lewat email — tanpa admin di tengahnya.',
+        tags: ['NeovarchLabs', 'Next.js', 'DOKU · QRIS', 'Resend'],
+      },
+      {
+        k: '03',
+        h: 'Desktop Linux',
+        p: 'Plugin dan tema untuk Omarchy, serta cara mengendalikan desktop dari HP.',
+        tags: ['Boxtop', 'Neovarch Glass', 'Omarchy Pocket'],
+      },
+      {
+        k: '04',
+        h: 'AI & batik',
+        p: 'Model batik hasil fine-tuning QLoRA di Hugging Face, dan dua situs live untuk mengenali dan mengkreasikan motif batik.',
+        tags: ['BatikLens', 'Wastra.ai', 'Hugging Face'],
+      },
+    ];
+
+const numbers = [
+  { n: stats.repos, l: en ? 'public repositories' : 'repositori publik', href: 'https://github.com/Maftuuh1922?tab=repositories' },
+  { n: stats.models, l: en ? 'models on Hugging Face' : 'model di Hugging Face', href: 'https://huggingface.co/maftuh-main' },
+  { n: stats.spaces, l: en ? 'Spaces' : 'Space', href: 'https://huggingface.co/maftuh-main' },
+  { n: stats.datasets, l: en ? (stats.datasets === 1 ? 'dataset' : 'datasets') : 'dataset', href: 'https://huggingface.co/maftuh-main' },
+];
+
+/* Kotak perkakas — yang benar-benar saya pakai, dengan contoh di mana */
+const tools = [
+  { src: '/logos/nextdotjs.svg', name: 'Next.js', en: 'NeovarchLabs · production site + PDF invoices', id: 'NeovarchLabs · situs produksi + invoice PDF' },
+  { src: '/logos/python.svg', name: 'Python', en: 'Nalar.ai-be · indexing & RAG over 1,204 documents', id: 'Nalar.ai-be · indeks & RAG 1.204 dokumen' },
+  { src: '/logos/flutter.svg', name: 'Flutter', en: 'aplikasi_berita, sales-management, Tunein', id: 'aplikasi_berita, sales-management, Tunein' },
+  { src: '/logos/linux.svg', name: 'Linux', en: 'VPS · Telegram bots, gateway, cron', id: 'VPS · bot Telegram, gateway, cron' },
+  { src: '/logos/9router.svg', name: '9router', en: 'combines 1,500+ models from more than ten providers', id: 'gabung 1.500+ model dari belasan penyedia' },
+  { src: '/logos/huggingface.svg', name: 'Hugging Face', en: 'maftuh-main · batik models, Spaces, a dataset', id: 'maftuh-main · model batik, Space, dataset' },
+  { src: '/logos/astro.svg', name: 'Astro', en: 'the site you’re reading right now', id: 'situs yang sedang Anda baca ini' },
+  { src: '/logos/sqlite.svg', name: 'SQLite', en: 'NeovarchLabs database (Turso)', id: 'basis data NeovarchLabs (Turso)' },
+  { src: '/logos/github.svg', name: 'GitHub', en: 'Maftuuh1922 · every public repo', id: 'Maftuuh1922 · semua repo publik' },
+];
+---
+<Base title={en ? 'About · Muhammad Maftuh' : 'Tentang · Muhammad Maftuh'} active="about" lang={lang}>
+  <figure class="about-art" aria-hidden="true">
+    {
+      (['light', 'dark'] as const).map((m) => (
+        <picture>
+          <source media="(max-width: 640px)" srcset={`/art/about-${m}-m-800.webp 800w, /art/about-${m}-m-1400.webp 1400w`} sizes="100vw" />
+          <img
+            class={`about-art-${m}`}
+            src={`/art/about-${m}-1920.webp`}
+            srcset={`/art/about-${m}-1920.webp 1920w, /art/about-${m}-3200.webp 3200w`}
+            sizes="(max-width: 1100px) 100vw, 1100px"
+            alt=""
+            width="1920"
+            height="1072"
+            fetchpriority={m === 'light' ? 'high' : undefined}
+            decoding="async"
+          />
+        </picture>
+      ))
+    }
+  </figure>
+
+  <section class="about-head">
+    <p class="label">{en ? 'About' : 'Tentang'}</p>
+    <h1 class="about-name">Muhammad Maftuh</h1>
+    <p class="about-role">{en ? 'Student & software builder · Bandung, Indonesia' : 'Mahasiswa & pembangun perangkat lunak · Bandung, Indonesia'}</p>
+  </section>
+
+  <section class="block prose about-bio">
+    {
+      en ? (
+        <>
+          <p>
+            I’m a student splitting my time between classes, writing code, and looking after small services that other
+            people use.
+          </p>
+          <p>
+            I work most comfortably close to data and infrastructure: APIs, databases, automation, and a bit of AI
+            tooling. At <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a> I handle everything
+            myself — from design to launch.
+          </p>
+          <p>
+            Things you can try are on the <a class="link" href={L('/work')}>work</a> page, and my latest notes are on
+            <a class="link" href={L('/now')}>now</a>.
+          </p>
+        </>
+      ) : (
+        <>
+          <p>
+            Saya mahasiswa yang menghabiskan waktu di antara kuliah, menulis kode, dan merawat layanan kecil yang dipakai
+            orang lain.
+          </p>
+          <p>
+            Saya bekerja paling nyaman di dekat data dan infrastruktur: API, basis data, otomasi, dan sedikit perkakas AI.
+            Di <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a> saya menangani semuanya sendiri —
+            dari desain sampai peluncuran.
+          </p>
+          <p>
+            Karya yang bisa dicoba ada di halaman <a class="link" href={L('/work')}>karya</a>, dan catatan terbaru di
+            <a class="link" href={L('/now')}>kini</a>.
+          </p>
+        </>
+      )
+    }
+  </section>
+
+  <section class="block about-wide" aria-labelledby="what-i-build">
+    <p class="label" id="what-i-build">{en ? 'What I build' : 'Yang saya bangun'}</p>
+    <ul class="about-areas">
+      {
+        areas.map((a) => (
+          <li class="about-area">
+            <span class="about-area-k">{a.k}</span>
+            <h2>{a.h}</h2>
+            <p>{a.p}</p>
+            <ul class="about-tags">
+              {a.tags.map((x) => <li>{x}</li>)}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="block about-wide" aria-labelledby="numbers">
+    <p class="label" id="numbers">
+      {en ? 'In numbers' : 'Dalam angka'}
+      <span class="about-note">
+        · {live
+          ? en ? 'counted from GitHub and Hugging Face at build time' : 'dihitung dari GitHub dan Hugging Face saat build'
+          : en ? 'last saved count' : 'hitungan tersimpan terakhir'}
+      </span>
+    </p>
+    <ul class="about-stats">
+      {
+        numbers.map((s) => (
+          <li>
+            <a href={s.href} target="_blank" rel="noopener">
+              <b>{nf.format(s.n)}</b>
+              <span>{s.l}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="block about-wide" aria-labelledby="toolbox">
+    <p class="label" id="toolbox">{en ? 'Toolbox — and where each one is used' : 'Kotak perkakas — dan di mana masing-masing dipakai'}</p>
+    <ul class="about-tools">
+      {
+        tools.map((x) => (
+          <li>
+            <img src={x.src} alt="" width="28" height="28" loading="lazy" decoding="async" />
+            <span>
+              <b>{x.name}</b>
+              <small>{en ? x.en : x.id}</small>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="block prose">
+    <p class="label">{en ? 'Say hello' : 'Sapa saya'}</p>
+    {
+      en ? (
+        <p>
+          The models, datasets, and Spaces I’ve uploaded live at
+          <a class="link" href="https://huggingface.co/maftuh-main">huggingface.co/maftuh-main</a>. Something to
+          discuss? Find me on <a class="link" href="https://github.com/Maftuuh1922">github</a>,
+          <a class="link" href="https://huggingface.co/maftuh-main">huggingface</a>, or
+          <a class="link" href="https://www.linkedin.com/in/muhammad-maftuh-798331386">linkedin</a>.
+        </p>
+      ) : (
+        <p>
+          Model, dataset, dan Space yang saya unggah ada di
+          <a class="link" href="https://huggingface.co/maftuh-main">huggingface.co/maftuh-main</a>. Ada yang ingin
+          didiskusikan? Sapa saya di <a class="link" href="https://github.com/Maftuuh1922">github</a>,
+          <a class="link" href="https://huggingface.co/maftuh-main">huggingface</a>, atau
+          <a class="link" href="https://www.linkedin.com/in/muhammad-maftuh-798331386">linkedin</a>.
+        </p>
+      )
+    }
+    <div class="case-actions about-cta">
+      <a class="btn-cv" href={L('/contact')}>{en ? 'Get in touch' : 'Hubungi saya'} <span aria-hidden="true">→</span></a>
+      <a class="btn-cv btn-ghost" href={t(lang).cv} download>{en ? 'Download CV (PDF)' : 'Unduh CV (PDF)'} <span aria-hidden="true">↓</span></a>
+    </div>
+  </section>
+</Base>

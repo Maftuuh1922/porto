@@ -1,6 +1,8 @@
 ---
 import type { Project } from '../data/projects';
+import { asLang } from '../i18n';
 const { p } = Astro.props as { p: Project };
+const en = asLang(Astro.props.lang ?? Astro.currentLocale) === 'en';
 const ext = (h: string) => h.startsWith('http');
 ---
 <article class="pcard" data-tags={p.tags.join(' ')} id={p.slug}>
@@ -9,9 +11,9 @@ const ext = (h: string) => h.startsWith('http');
       p.img ? (
         <img src={p.img} alt={p.imgAlt} width="800" height="500" loading="lazy" decoding="async" />
       ) : (
-        <div class="pshot-empty" role="img" aria-label={`${p.name} — belum ada tangkapan layar`}>
+        <div class="pshot-empty" role="img" aria-label={`${p.name} — ${en ? 'no screenshot yet' : 'belum ada tangkapan layar'}`}>
           <span>{p.name}</span>
-          <small>belum ada tangkapan layar</small>
+          <small>{en ? 'no screenshot yet' : 'belum ada tangkapan layar'}</small>
         </div>
       )
     }
@@ -23,7 +25,7 @@ const ext = (h: string) => h.startsWith('http');
       <span class="pstatus">{p.status}</span>
     </div>
     <p class="plead">{p.lead}</p>
-    <ul class="pstack" aria-label="Teknologi">{p.stack.map((s) => <li>{s}</li>)}</ul>
+    <ul class="pstack" aria-label={en ? 'Technology' : 'Teknologi'}>{p.stack.map((s) => <li>{s}</li>)}</ul>
     {
       p.links.length ? (
         <div class="plinks">
@@ -34,7 +36,7 @@ const ext = (h: string) => h.startsWith('http');
           ))}
         </div>
       ) : (
-        <p class="pnolink">belum dipublikasikan</p>
+        <p class="pnolink">{en ? 'not published yet' : 'belum dipublikasikan'}</p>
       )
     }
   </div>

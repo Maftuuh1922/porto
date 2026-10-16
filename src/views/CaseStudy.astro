@@ -1,0 +1,57 @@
+---
+/* Kerangka studi kasus: isi tiap bahasa dikirim sebagai objek dari src/views/cases.ts */
+import Base from '../layouts/Base.astro';
+import { localePath, type Lang } from '../i18n';
+import type { Case } from './cases';
+
+const { lang, c } = Astro.props as { lang: Lang; c: Case };
+const en = lang === 'en';
+const x = c[lang];
+---
+<Base title={x.title} active="work" lang={lang} description={x.lead}>
+  <section class="prose">
+    <p class="label">{en ? 'Case study' : 'Studi kasus'}</p>
+    <h1 class="case-title">{c.name}</h1>
+    <p class="case-lead">{x.lead}</p>
+  </section>
+
+  <figure class="block case-shot">
+    <img src={c.img} alt={x.imgAlt} width="800" height="500" loading="lazy" decoding="async" />
+    <figcaption>{en ? 'screenshot of the live site' : 'tangkapan layar situs live'}</figcaption>
+  </figure>
+
+  <section class="block">
+    <dl class="case-meta">
+      {
+        x.facts.map(([k, v]) => (
+          <div>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="block prose">
+    {
+      x.sections.map(([k, v]) => (
+        <>
+          <p class="label">{k}</p>
+          <p>{v}</p>
+        </>
+      ))
+    }
+  </section>
+
+  <section class="block case-actions">
+    {
+      x.actions.map((a, i) => (
+        <a class={i === 0 ? 'btn-cv' : 'btn-cv btn-ghost'} href={a.href} target="_blank" rel="noopener">
+          {a.label} <span aria-hidden="true">↗</span>
+        </a>
+      ))
+    }
+    <a class="btn-cv btn-ghost" href={localePath(lang, '/work')}>{en ? '← Back to work' : '← Kembali ke karya'}</a>
+  </section>
+</Base>

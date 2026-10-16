@@ -2,10 +2,14 @@
 // Grafik kontribusi gaya GitHub: 53 minggu × 7 hari, tiap kotak satu hari.
 import type { Contrib } from '../lib/contrib';
 
+import { asLang } from '../i18n';
 const { data, live = false } = Astro.props as { data: Contrib; live?: boolean };
+const en = asLang(Astro.props.lang ?? Astro.currentLocale) === 'en';
 const days = data.days;
 
-const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+const BULAN = en
+  ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
 /* sejajarkan kolom pertama ke hari Minggu seperti GitHub */
 const pad = new Date(days[0].date + 'T00:00:00Z').getUTCDay();
@@ -30,23 +34,27 @@ const labelBulan = weeks.map((w) => {
 
 const aktif = days.filter((d) => d.count > 0).length;
 const tertinggi = Math.max(...days.map((d) => d.count));
-const fmt = new Intl.NumberFormat('id-ID');
+const fmt = new Intl.NumberFormat(en ? 'en-US' : 'id-ID');
 const rentang = `${BULAN[new Date(days[0].date + 'T00:00:00Z').getUTCMonth()]} ${days[0].date.slice(0, 4)} – ${BULAN[new Date(days[days.length - 1].date + 'T00:00:00Z').getUTCMonth()]} ${days[days.length - 1].date.slice(0, 4)}`;
 ---
 <div class="heat-card">
   <div class="heat-head">
     <div>
-      <div class="heat-total">{fmt.format(data.total)}<span>kontribusi</span></div>
+      <div class="heat-total">{fmt.format(data.total)}<span>{en ? 'contributions' : 'kontribusi'}</span></div>
       <div class="heat-sub">
-        {aktif} hari aktif · {rentang} · tertinggi {tertinggi}/hari<br />
-        {live ? 'data langsung dari GitHub saat build' : 'data tersimpan — refresh saat build berikutnya'}
+        {en
+          ? `${aktif} active days · ${rentang} · peak ${tertinggi}/day`
+          : `${aktif} hari aktif · ${rentang} · tertinggi ${tertinggi}/hari`}<br />
+        {en
+          ? live ? 'live data from GitHub at build time' : 'cached data — refreshed on the next build'
+          : live ? 'data langsung dari GitHub saat build' : 'data tersimpan — refresh saat build berikutnya'}
       </div>
     </div>
     <div class="heat-legend" aria-hidden="true">
-      <span>sedikit</span>
+      <span>{en ? 'less' : 'sedikit'}</span>
       <i class="heat-cell l0"></i><i class="heat-cell l1"></i><i class="heat-cell l2"></i
       ><i class="heat-cell l3"></i><i class="heat-cell l4"></i>
-      <span>banyak</span>
+      <span>{en ? 'more' : 'banyak'}</span>
     </div>
   </div>
 
@@ -54,11 +62,11 @@ const rentang = `${BULAN[new Date(days[0].date + 'T00:00:00Z').getUTCMonth()]} $
     {labelBulan.map((m) => <span>{m}</span>)}
   </div>
 
-  <div class="heat-grid" role="img" aria-label={`Grafik kontribusi GitHub ${data.total} kontribusi dalam 12 bulan terakhir`}>
+  <div class="heat-grid" role="img" aria-label={en ? `GitHub contribution graph: ${data.total} contributions in the last 12 months` : `Grafik kontribusi GitHub ${data.total} kontribusi dalam 12 bulan terakhir`}>
     {
       cells.map((d) =>
         d ? (
-          <span class={`heat-cell l${d.level}`} title={`${d.date} · ${d.count} kontribusi`} />
+          <span class={`heat-cell l${d.level}`} title={`${d.date} · ${d.count} ${en ? 'contributions' : 'kontribusi'}`} />
         ) : (
           <span class="heat-cell empty" />
         ),
@@ -67,7 +75,7 @@ const rentang = `${BULAN[new Date(days[0].date + 'T00:00:00Z').getUTCMonth()]} $
   </div>
 
   <div class="heat-foot">
-    <span>tiap kotak = satu hari · baris atas Minggu, baris bawah Sabtu</span>
+    <span>{en ? 'each square = one day · top row Sunday, bottom row Saturday' : 'tiap kotak = satu hari · baris atas Minggu, baris bawah Sabtu'}</span>
     <span>github.com/Maftuuh1922</span>
   </div>
 </div>

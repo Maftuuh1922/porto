@@ -1,14 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
+/* Satu halaman 404 statis untuk kedua bahasa (Vercel menyajikan /404.html untuk semua jalur). */
 ---
-<Base title="Tidak ditemukan · Muhammad Maftuh" active="">
+<Base title="Not found · Muhammad Maftuh" active="" lang="en" is404={true}>
   <section class="prose">
     <p class="label">404</p>
-    <h1 class="err-title">Halaman tidak ada</h1>
+    <h1 class="err-title">Page not found</h1>
     <p>
-      Tautan yang dibuka tidak menunjuk ke halaman mana pun di situs ini. Coba mulai dari
-      <a class="link" href="/">index</a>, lihat <a class="link" href="/work">karya</a>, atau
-      <a class="link" href="/contact">hubungi saya</a>.
+      The link you opened doesn’t point to any page on this site. Try starting from the
+      <a class="link" href="/">index</a>, browse the <a class="link" href="/work">work</a>, or
+      <a class="link" href="/contact">get in touch</a>.
+    </p>
+    <p lang="id">
+      <strong style="color:var(--ink)">Halaman tidak ada.</strong> Tautan yang dibuka tidak menunjuk ke halaman mana pun
+      di situs ini. Coba mulai dari <a class="link" href="/id/">beranda</a>, lihat
+      <a class="link" href="/id/work">karya</a>, atau <a class="link" href="/id/contact">hubungi saya</a>.
     </p>
   </section>
 </Base>

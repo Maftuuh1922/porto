@@ -1,6 +1,8 @@
 ---
 // Rak horizontal + panah ‹ › — perilaku sama seperti yuvich
+import { t, asLang } from '../i18n';
 const { label, caption } = Astro.props;
+const T = t(asLang(Astro.props.lang ?? Astro.currentLocale));
 ---
 <section class="block">
   {caption && <p class="label">{caption}</p>}
@@ -9,13 +11,13 @@ const { label, caption } = Astro.props;
       <slot />
     </div>
     <div class="shelf-nav">
-      <button class="shelf-btn" type="button" data-dir="-1" aria-label="Sebelumnya">
+      <button class="shelf-btn" type="button" data-dir="-1" aria-label={T.shelfPrev}>
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"
           ><path d="M8.5 3 4.5 7l4 4" fill="none" stroke="currentColor" stroke-width="1.6"
             stroke-linecap="round" stroke-linejoin="round"></path></svg
         >
       </button>
-      <button class="shelf-btn" type="button" data-dir="1" aria-label="Berikutnya">
+      <button class="shelf-btn" type="button" data-dir="1" aria-label={T.shelfNext}>
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"
           ><path d="M5.5 3 9.5 7l-4 4" fill="none" stroke="currentColor" stroke-width="1.6"
             stroke-linecap="round" stroke-linejoin="round"></path></svg
