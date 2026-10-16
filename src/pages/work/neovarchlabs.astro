@@ -2,10 +2,10 @@
 import Base from '../../layouts/Base.astro';
 
 const fakta = [
-  ['Peran', 'Pemilik & pengembang'],
-  ['Tumpukan', 'Next.js, Turso, pdfkit'],
+  ['Peran', 'Pendiri · lead developer'],
+  ['Tumpukan', 'Next.js, Prisma, Turso'],
   ['Status', 'Produksi — neovarchlabs.web.id'],
-  ['Pembayaran', 'QRIS dinamis + notifikasi Telegram'],
+  ['Pembayaran', 'QRIS via DOKU, status otomatis'],
 ];
 ---
 <Base title="Studi kasus NeovarchLabs · Muhammad Maftuh" active="work">
@@ -13,10 +13,15 @@ const fakta = [
     <p class="label">Studi kasus</p>
     <h1 class="case-title">NeovarchLabs</h1>
     <p class="case-lead">
-      Situs agensi kecil yang urusannya tidak berhenti di halaman depan: pemesanan, tagihan QRIS,
-      dan arsip invoice harus jalan sendiri tanpa campur tangan manual.
+      Situs agensi kecil yang urusannya tidak berhenti di halaman depan: pemesanan, pembayaran,
+      invoice, dan kwitansi harus jalan sendiri tanpa campur tangan manual.
     </p>
   </section>
+
+  <figure class="block case-shot">
+    <img src="/work/neovarchlabs.webp" alt="Halaman depan neovarchlabs.web.id: tulisan piksel “Neovarch Labs — We Make You See” di latar gelap" width="800" height="500" loading="lazy" decoding="async" />
+    <figcaption>tangkapan layar situs live</figcaption>
+  </figure>
 
   <section class="block">
     <dl class="case-meta">
@@ -41,24 +46,26 @@ const fakta = [
 
     <p class="label">Pendekatan</p>
     <p>
-      Satu sistem yang menutup rantainya dari ujung ke ujung. Pesanan tercatat di database Turso,
-      QRIS dibuat dinamis sesuai nominal tagihan, dan ketika pembayaran terverifikasi sistem
-      menandai lunas, membuat PDF invoice di sisi server dengan pdfkit, lalu mengirim notifikasi
-      ke grup Telegram. Konten halaman depan ikut disimpan di database sehingga bisa diubah tanpa
-      deploy ulang.
+      Satu sistem yang menutup rantainya dari ujung ke ujung. Klien memilih paket lalu langsung
+      diarahkan ke halaman bayar; QRIS dibuat lewat DOKU sesuai nominal, dan begitu pembayaran
+      masuk statusnya berubah sendiri. Pesanan lalu bergerak lewat satu alur — menunggu
+      pembayaran, dibayar, dikonfirmasi, dikerjakan, serah terima, selesai — yang dilihat klien
+      di dasbornya. Invoice dikirim sebelum bayar dan kwitansi sesudahnya lewat email (Resend);
+      Telegram hanya untuk notifikasi admin. Omzet hanya menghitung pembayaran yang benar-benar
+      lunas.
     </p>
 
     <p class="label">Yang saya kerjakan</p>
     <p>
-      Seluruhnya: rancangan skema data, alur autentikasi, generator QRIS dan PDF, webhook
-      pembayaran, sampai notifikasi. Saya juga menulis alur login Google dengan fallback khusus
-      lingkungan pengembangan supaya tim bisa menguji tanpa kredensial produksi.
+      Saya memimpin pengembangannya bersama co-founder Farrel Shaquille (FSThub): skema data
+      dengan Prisma di atas Turso, integrasi pembayaran DOKU dan webhook-nya, alur pesanan, email
+      transaksi, dasbor admin dan klien, sampai tampilan liquid glass-nya.
     </p>
 
     <p class="label">Hasil</p>
     <p>
-      Tagihan terkirim dan terbayar tanpa spreadsheet: pelanggan memindai QRIS, sistem mencatat,
-      invoice PDF tersimpan, notifikasi masuk. Semua berjalan di produksi pada
+      Tagihan terkirim dan terbayar tanpa spreadsheet: klien memindai QRIS, sistem mencatat,
+      kwitansi terkirim, dan admin cukup mengerjakan pesanannya. Semua berjalan di produksi pada
       neovarchlabs.web.id.
     </p>
   </section>

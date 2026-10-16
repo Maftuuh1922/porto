@@ -32,8 +32,10 @@ html[data-theme=dark] .heat-card{background:#141418}
 html[data-theme=dark] .l0{background:#1f1f26}
 html[data-theme=dark] .card-face:has(.live-frame) .card-note{background:#141418e6}
 html[data-theme=dark] .caret{background:#33333d}
-/* ukiran bawah: mode gelap pakai plat gelap terpisah, mode terang pakai plat biru-putih */
-html[data-theme=dark] .plate-block .plate img{content:url('/plate-dark.webp');filter:brightness(.78) saturate(.95)}
+/* plat bawah: dua ilustrasi maskot (terang = langit merah, gelap = malam) di-cross-fade saat ganti tema */
+.plate .plate-dark{opacity:0;transition:opacity .8s cubic-bezier(.4,0,.2,1)}
+html[data-theme=dark] .plate .plate-dark{opacity:1}
+@media (prefers-reduced-motion:reduce){.plate .plate-dark{transition:none}}
 /* mode gelap: kaca yang sama, hanya latar belakangnya yang gelap — jangan
    ditimpa gradien terpisah supaya strukturnya tetap satu */
 html{background:var(--bg);-webkit-text-size-adjust:100%;overflow-x:clip}
@@ -57,15 +59,15 @@ em{font-style:italic;color:var(--ink)}
   -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   transition:opacity .8s cubic-bezier(.4,0,.2,1)}
-.page-bg::before{background-image:url('/bg/hermes.webp');opacity:1}
-.page-bg::after{background-image:url('/bg/hermes-dark.webp');opacity:0}
+.page-bg::before{background-image:url('/bg/mascot.webp');opacity:1}
+.page-bg::after{background-image:url('/bg/mascot-dark.webp');opacity:0}
 html[data-theme=dark] .page-bg::before{opacity:0}
 html[data-theme=dark] .page-bg::after{opacity:1}
 /* tanpa animasi: matikan pseudo, gambar langsung di layer utama (satu file per mode) */
 @media (prefers-reduced-motion:reduce){
   .page-bg::before,.page-bg::after{display:none}
-  .page-bg{background-image:url('/bg/hermes.webp');background-size:cover;background-position:center 70%}
-  html[data-theme=dark] .page-bg{background-image:url('/bg/hermes-dark.webp')}
+  .page-bg{background-image:url('/bg/mascot.webp');background-size:cover;background-position:center 70%}
+  html[data-theme=dark] .page-bg{background-image:url('/bg/mascot-dark.webp')}
 }
 /* teks navbar polos di atas ilustrasi: gelap di mode terang, putih di mode gelap */
 body:has(.page-bg) .site-nav a{color:var(--ink)}
@@ -216,7 +218,7 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 
 /* ---- hero (index): lubang hitam ---- */
-.hero-hole{width:min(var(--wide),100vw - 2rem);margin:-28px auto 0;padding:0 .8rem}
+.page>.hero-hole{width:min(var(--wide),100vw - 2rem);margin:-28px 0 0 calc((100% - min(var(--wide),100vw - 2rem)) / 2 - .8rem);padding:0 .8rem}
 .hero-hole .blackhole-object{z-index:30;width:100%;line-height:0;position:relative;
   touch-action:none;cursor:grab;user-select:none;
   transform:translate(var(--dx,0px),var(--dy,0px));will-change:transform}
@@ -241,19 +243,22 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
 .plate-block{position:relative}
 .plate-block > section{position:relative;z-index:1}
 .plate{position:absolute;top:0;bottom:-190px;left:calc(50% - 50vw);width:100vw;
-  overflow:hidden;z-index:0;background:#0d1b3d;
+  overflow:hidden;z-index:0;background:#5a0b12;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 96px);
   mask-image:linear-gradient(to bottom,transparent 0,#000 96px)}
 .plate img{position:absolute;inset:0;display:block;width:100%;height:100%;
-  object-fit:cover;object-position:center 42%}
+  object-fit:cover;object-position:38% 40%;transform:scaleX(-1)}
 .plate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:190px;
-  background:linear-gradient(to bottom,transparent 0,rgba(4,7,18,.42) 55%,rgba(4,7,18,.93) 100%)}
+  background:linear-gradient(to bottom,transparent 0,rgba(22,4,8,.42) 55%,rgba(16,3,6,.93) 100%)}
 body:has(.plate-block) .site-foot{position:relative;z-index:1;margin-top:72px;color:#f4f3f0}
 body:has(.plate-block) .site-foot .ticker{color:#fff}
 body:has(.plate-block) .plate-block .label{color:#5c5b64}
 html[data-theme=dark] .plate-block .label{color:#c2c1cb}
 body:has(.plate-block) .shelf-pos{color:#e8e6e1;text-shadow:0 1px 3px rgba(5,9,24,.8)}
 body:has(.plate-block) .site-foot{color:#f4f3f0;text-shadow:0 1px 3px rgba(5,9,24,.8)}
+/* keterangan kartu di atas ilustrasi: pil kaca gelap supaya tetap terbaca di bagian ilustrasi yang terang */
+.plate-block .card-cap{background:rgba(24,5,9,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:7px 11px;margin-top:10px}
 /* kartu di atas ukiran dibuat lebih ringkas */
 .plate-block .card{width:min(17rem,100vw - 3rem)}
 
@@ -309,11 +314,48 @@ html .plate-block .card-face .card-note{
   left:14px;right:14px;bottom:12px;text-align:center}
 html[data-theme=dark] .plate-block .card-face .card-note{background:rgba(14,15,22,.62)}
 .plate-block .shelf-btn{
-  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.45);color:#fff;
+  background:rgba(24,5,9,.5);border:1px solid rgba(255,255,255,.4);color:#fff;
   -webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
 .plate-block .shelf-btn:disabled{color:rgba(255,255,255,.45);border-color:rgba(255,255,255,.25)}
 
+
+/* kartu rak beranda: tangkapan layar asli di dalam kaca */
+.card-shot{display:flex;align-items:center;justify-content:center;padding:16px 16px 50px}
+.card-shot img{width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top center;border-radius:14px;display:block;
+  box-shadow:0 1px 0 rgba(255,255,255,.5),0 10px 24px -12px rgba(10,2,4,.7);background:#fff}
+
+/* ---- halaman work: satu kartu per proyek ---- */
+.work-wrap{width:min(64rem,100vw - 2rem);position:relative;left:50%;transform:translateX(-50%)}
+.work-wrap .filters{margin-bottom:22px;align-items:center}
+.filter-count{font-family:var(--mono);font-size:11px;color:var(--mute);margin-left:auto}
+.work-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.pcard{background:var(--card);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;
+  border:1px solid var(--rule);scroll-margin-top:24px}
+.pcard[hidden]{display:none}
+.pshot{position:relative;aspect-ratio:16/10;background:#e9e7e3;overflow:hidden}
+html[data-theme=dark] .pshot{background:#1c1c22}
+.pshot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.pcard:hover .pshot img{transform:scale(1.025)}
+.pshot-empty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:4px;
+  background:repeating-linear-gradient(135deg,transparent 0 12px,rgba(0,0,0,.025) 12px 13px)}
+.pshot-empty span{font:600 22px/1.1 var(--sans);color:var(--ink);letter-spacing:-.01em}
+.pshot-empty small{font-family:var(--mono);font-size:11px;color:var(--mute)}
+html[data-theme=dark] .pshot-empty{background:repeating-linear-gradient(135deg,transparent 0 12px,rgba(255,255,255,.03) 12px 13px)}
+.pshot-src{position:absolute;right:10px;bottom:10px;font-family:var(--mono);font-size:10px;letter-spacing:.04em;
+  color:#fff;background:rgba(12,12,16,.68);padding:3px 8px;border-radius:999px;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.pbody{padding:18px 20px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
+.phead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.phead h3{margin:0;font:600 18px/1.2 var(--sans);color:var(--ink);letter-spacing:-.01em}
+.pstatus{font-family:var(--mono);font-size:11px;color:var(--mute)}
+.plead{font-size:14px;line-height:1.6;color:var(--text)}
+.pstack{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.pstack li{font-family:var(--mono);font-size:10.5px;color:var(--ink);border:1px solid var(--rule);
+  border-radius:999px;padding:2px 9px;background:var(--bg)}
+.plinks{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:auto;font-size:14px}
+.pnolink{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:auto}
+@media (max-width:760px){.work-grid{grid-template-columns:1fr}.filter-count{margin-left:0;width:100%}}
 
 /* ---- meja (about): benda telanjang di atas latar polos, tanpa kartu ---- */
 .desk-mat{position:relative;width:min(var(--wide),100vw - 2rem);margin-inline:auto;min-height:560px}
@@ -375,6 +417,11 @@ html[data-theme=dark] .plate-block .card-face .card-note{background:rgba(14,15,2
 .case-meta dd{margin:5px 0 0;font-size:14px;color:var(--ink)}
 .case-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 @media (max-width:640px){.case-meta{grid-template-columns:repeat(2,1fr)}}
+
+/* gambar di studi kasus */
+.case-shot{margin:0}
+.case-shot img{width:100%;height:auto;border-radius:16px;display:block;border:1px solid var(--rule)}
+.case-shot figcaption{font-family:var(--mono);font-size:11px;color:var(--mute);margin-top:8px}
 
 /* ---- 404 ---- */
 .err-title{font-size:clamp(40px,7vw,68px);letter-spacing:-.03em;margin:6px 0 16px}

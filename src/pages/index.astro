@@ -1,127 +1,62 @@
 ---
 import Base from '../layouts/Base.astro';
 import Shelf from '../components/Shelf.astro';
-import Card from '../components/Card.astro';
+import ShotCard from '../components/ShotCard.astro';
+import { featured, projects } from '../data/projects';
+const shelf = [...featured, ...projects.filter((p) => ['leave-no-trace', 'wastra'].includes(p.slug))];
 ---
-<Base title="Muhammad Maftuh" active="index" bg="/bg/hermes.webp">
+<Base title="Muhammad Maftuh" active="index" bg="mascot">
   <section class="wide hero-hole" aria-label="Bintang neutron">
     <div
       class="desk-object blackhole-object"
       id="bh-object"
       data-return
       role="img"
-      aria-label="Bintang neutron. Arahkan kursor untuk menelusuri jejak sinar, seret ke bawah ke arah teks dan kata-katanya akan tertarik masuk; lepas, bintangnya kembali sendiri."
+      aria-label="Bintang neutron dengan piringan plasma merah dan pancaran pulsar yang menyapu. Arahkan kursor untuk menelusuri jejak sinar; seret ke arah teks dan kata-katanya akan tersedot masuk; lepas, bintangnya kembali sendiri."
     >
       <canvas class="bh-rays" id="bh-rays" aria-hidden="true"></canvas>
       <canvas id="bh-canvas" width="560" height="347"></canvas>
     </div>
     <p class="hole-caption">
-      <span class="bh-readout" id="bh-readout" aria-live="polite" data-idle="bintang neutron · 1,4 M☉">bintang neutron · 1,4 M☉</span>
+      <span class="bh-readout" id="bh-readout" aria-live="polite" data-idle="pulsar · 1,4 M☉ · seret aku">pulsar · 1,4 M☉ · seret aku</span>
     </p>
   </section>
 
   <section class="block prose" data-gravity>
     <p>
-      Saya <strong style="color:var(--ink)">Muhammad Maftuh</strong>, mahasiswa dan pembangun perangkat
-      lunak dari Bandung. Sekarang menjalankan <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a>,
-      studio kecil untuk situs dan sistem tagihan, serta merawat beberapa proyek sumber terbuka sendiri.
+      Saya <strong style="color:var(--ink)">Muhammad Maftuh</strong>, mahasiswa dan pembangun perangkat lunak dari
+      Bandung. Saya mendirikan <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a> — studio kecil
+      untuk situs dan aplikasi web yang pemesanan dan pembayarannya berjalan sendiri — dan membangun
+      <a class="link" href="https://www.neovarchagent.web.id">Neovarch Agent</a>, agen AI yang jalan di PC Anda dan
+      dikendalikan dari HP.
     </p>
     <p>
-      Saya suka mengerjakan hal yang bisa dicoba langsung: asisten AI yang menjawab dengan sitasi,
-      ekstensi yang memblokir halaman berjudi, pengklasifikasi batik. Semuanya ada di halaman
-      <a class="link" href="/work">work</a>.
+      Belakangan saya banyak menulis perkakas agar coding agent bisa dipercaya: satu mencatat dan membatalkan jejak yang
+      ditinggalkannya, satu mencegahnya mematikan proses yang bukan miliknya, satu lagi membuatnya jujur ketika tes
+      memang mustahil lulus. Di sela itu ada plugin dan tema untuk Omarchy, model batik di Hugging Face, dan game horor
+      Roblox. Semuanya, dengan tangkapan layar asli, ada di halaman <a class="link" href="/work">work</a>.
     </p>
     <p>
-      Bintang neutron di atas boleh digeser — tarik ke sini, kata-katanya akan ikut masuk. Temukan saya di
+      Bintang neutron di atas boleh diseret — tarik ke sini, kata-katanya ikut tersedot. Temukan saya di
       <a class="link" href="https://github.com/Maftuuh1922">github</a> dan
-      <a class="link" href="https://huggingface.co/maftuh-main">huggingface</a>, atau tulis langsung kalau
-      ada yang mau didiskusikan.
+      <a class="link" href="https://huggingface.co/maftuh-main">huggingface</a>, atau
+      <a class="link" href="/contact">tulis langsung</a> kalau ada yang ingin didiskusikan.
     </p>
   </section>
 
   <div class="plate-block">
-    <figure class="plate">
-      <img
-        src="/plate.webp"
-        alt="Ukiran pemandangan runtuhan klasik: gerbang berlengkung dan kolom di kiri, kuil di kanan, dengan latar pegunungan bersalju dan danau"
-        width="1670"
-        height="941"
-        loading="lazy"
-        decoding="async"
-      />
+    <figure class="plate" aria-hidden="true">
+      <img class="plate-light" src="/plate-mascot.webp" alt="" width="1356" height="750" loading="lazy" decoding="async" />
+      <img class="plate-dark" src="/plate-mascot-dark.webp" alt="" width="1356" height="750" loading="lazy" decoding="async" />
     </figure>
 
     <Shelf label="Yang sedang saya kerjakan" caption="Sedang dikerjakan">
-    <Card
-      name="NeovarchLabs"
-      href="https://www.neovarchlabs.web.id"
-      desc="situs agensi + tagihan QRIS · Next.js"
-      note="produksi · neovarchlabs.web.id"
-    >
-      <div class="qris">
-        <div style="font-size:9.5px;color:var(--mute)">STATUS · PRODUKSI</div>
-        <div class="qr"></div>
-        <div>QRIS dinamis</div>
-        <div class="paid" style="margin-top:5px">● pelanggan · notifikasi Telegram</div>
-      </div>
-    </Card>
-
-    <Card
-      name="Nalar.Ai"
-      href="https://github.com/Maftuuh1922/Nalar.Ai"
-      desc="asisten AI edukasi · RAG · TypeScript"
-      note="RAG · 4 dokumen dirujuk"
-    >
-      <div class="window" style="background:#14131a">
-        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">Nalar.Ai — RAG</span></div>
-        <div class="term" id="nalar-term"></div>
-      </div>
-    </Card>
-
-    <Card
-      name="Pagarnet"
-      href="https://github.com/Maftuuh1922/Pagarnet"
-      desc="ekstensi anti-judol · HTML, JS"
-      note="blokir real-time · tanpa izin tambahan"
-    >
-      <div class="block-ui">
-        <div class="row" style="align-items:flex-end">
-          <div>
-            <div class="big" id="pg-count">0</div>
-            <div style="font-size:10px;color:var(--mute)">domain judi diblokir</div>
-          </div>
-          <div style="font-size:10px;color:#2f9155">● aktif</div>
-        </div>
-        <div style="margin-top:8px" id="pg-tags"></div>
-      </div>
-    </Card>
-
-    <Card
-      name="BatikLens"
-      href="https://github.com/Maftuuh1922/batiklens-ai-powered-heritage-explorer"
-      desc="eksplorasi batik bertenaga AI · TS"
-      note="memindai pola…"
-    >
-      <div class="klass">
-        <div class="scan"></div>
-        <div class="row"><span>parang</span><b id="b1">0%</b></div>
-        <div class="bar"><i id="r1"></i></div>
-        <div class="row"><span>kawung</span><b id="b2">0%</b></div>
-        <div class="bar"><i id="r2"></i></div>
-        <div class="row"><span>mega mendung</span><b id="b3">0%</b></div>
-        <div class="bar"><i id="r3"></i></div>
-      </div>
-    </Card>
+      {shelf.map((p) => <ShotCard p={p} />)}
     </Shelf>
   </div>
 </Base>
 
 <script>
-  import { nalar, pagarnet, batik } from '../scripts/demos';
   import { initBlackHole } from '../scripts/blackhole';
-
-  nalar();
-  pagarnet();
-  batik();
   initBlackHole();
 </script>

@@ -1,0 +1,41 @@
+---
+import type { Project } from '../data/projects';
+const { p } = Astro.props as { p: Project };
+const ext = (h: string) => h.startsWith('http');
+---
+<article class="pcard" data-tags={p.tags.join(' ')} id={p.slug}>
+  <div class="pshot">
+    {
+      p.img ? (
+        <img src={p.img} alt={p.imgAlt} width="800" height="500" loading="lazy" decoding="async" />
+      ) : (
+        <div class="pshot-empty" role="img" aria-label={`${p.name} — belum ada tangkapan layar`}>
+          <span>{p.name}</span>
+          <small>belum ada tangkapan layar</small>
+        </div>
+      )
+    }
+    {p.imgSrc && <span class="pshot-src">{p.imgSrc}</span>}
+  </div>
+  <div class="pbody">
+    <div class="phead">
+      <h3>{p.name}</h3>
+      <span class="pstatus">{p.status}</span>
+    </div>
+    <p class="plead">{p.lead}</p>
+    <ul class="pstack" aria-label="Teknologi">{p.stack.map((s) => <li>{s}</li>)}</ul>
+    {
+      p.links.length ? (
+        <div class="plinks">
+          {p.links.map((l) => (
+            <a class="link" href={l.href} target={ext(l.href) ? '_blank' : undefined} rel={ext(l.href) ? 'noopener' : undefined}>
+              {l.label}{ext(l.href) && <span aria-hidden="true"> ↗</span>}
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="pnolink">belum dipublikasikan</p>
+      )
+    }
+  </div>
+</article>
