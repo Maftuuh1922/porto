@@ -3,7 +3,8 @@
    Bedanya dengan lubang hitam: ada permukaan padat yang menyala, jadi sinar yang
    "tertangkap" di sini berarti menembus permukaan bintang. */
 
-const TAU = Math.PI * 2;
+import { createScene } from './ns-render';
+
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const SHELL = 2.6; // parameter benturan kritis b_c (satuan r_s)
 
@@ -98,7 +99,8 @@ export function initBlackHole(): void {
     const r = obj.getBoundingClientRect();
     W = Math.max(240, r.width);
     H = Math.max(150, r.height || (W * 347) / 560);
-    dpr = Math.min(devicePixelRatio || 1, 2); // dulu dikali 1,25 → piksel 56% lebih banyak, padahal hasilnya tak terlihat
+    // dibatasi 1,5× (1× di mode hemat): selisih ketajamannya tak terlihat, bebannya 1,8× lipat
+    dpr = Math.min(devicePixelRatio || 1, low ? 1 : 1.5);
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     if (rayCanvas) {
@@ -107,278 +109,31 @@ export function initBlackHole(): void {
     }
     Rs = H * 0.155;
     g = 0.17 * H * 1.02;
-    buildDisk();
+    scene.resize(W, H, dpr, Rs, low);
+    if (REDUCED) drawHole(14);
     rays = BS.map(trace);
     drawRays(null);
   };
 
-  /* ---------- piringan akresi ----------
-     Versi lama:30 cincin garis putus-putus → kelihatan seperti grid/diagram datar.
-     Versi baru: potongan busur pendek dengan turbulensi acak + penerangan Doppler,
-     jadi seperti piringan plasma yang benar-benar berputar. */
-  const Ri = () => Rs * 1.75;
-  const Ro = () => Rs * 4.6;
-  const SEG = 9;
-  const phases: number[] = [];
-  const buildDisk = () => {
-    phases.length = 0;
-    let s = 7919;
-    for (let i = 0; i < 48; i++) {
-      s = (s * 9301 + 49297) % 233280;
-      phases.push((s / 233280) * TAU);
-    }
-  };
-
-  const ROLL = -0.13; // miring piringan
-  const KY = 0.2; // apitan elips (dilihat hampir dari pinggir)
-
-  /* satu setengah piringan (depan/belakang) — dipanggil dua kali per frame.
-     Disatkan per ember alfa biar cuma ~140 goresan, bukan 500+ (kanvas tanpa GPU
-     di mesin ini jalan 7 fps kalau satu-satu). */
-  const diskHalf = (t: number, front: boolean) => {
-    const inner = Ri();
-    const outer = Ro();
-    const N = 14;
-    const span = TAU / SEG;
-    const BUCKET = [0.07, 0.18, 0.34];
-    const segs: number[][] = [[], [], []];
-    ctx.save();
-    ctx.translate(W / 2, H / 2);
-    ctx.rotate(ROLL);
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.lineCap = 'round';
-    const g = ctx.createLinearGradient(-outer, 0, outer, 0);
-    g.addColorStop(0, 'rgba(238,247,255,1)');
-    g.addColorStop(0.4, 'rgba(150,204,255,0.72)');
-    g.addColorStop(1, 'rgba(52,96,206,0.34)');
-    ctx.strokeStyle = g;
-    for (let i = 0; i < N; i++) {
-      const f = i / (N - 1);
-      const r = inner + (outer - inner) * Math.pow(f, 1.4);
-      const fall = Math.pow(1 - f, 1.55);
-      const kep = Math.pow(inner / r, 1.5); // rotasi diferensial (Kepler)
-      const drift = t * kep * 0.8 + phases[i];
-      const base = (0.05 + 0.4 * fall) * (front ? 1.2 : 0.7);
-      for (const b of segs) b.length = 0;
-      for (let k = 0; k < SEG; k++) {
-        const a0 = k * span + drift;
-        const mid = a0 + span * 0.5;
-        if ((Math.sin(mid) > 0) !== front) continue;
-        const dop = 0.42 + 0.58 * (0.5 - 0.5 * Math.cos(mid)); // sisi mendekat lebih terang
-        const turb = 0.7 + 0.3 * Math.sin(mid * 3 + t * 1.7 + phases[i]);
-        const a = base * dop * turb;
-        let b = 0;
-        while (b < 2 && a > BUCKET[b]) b++;
-        segs[b].push(a0);
-      }
-      ctx.lineWidth = Math.max(2, ((outer - inner) / N) * 1.9);
-      for (let b = 0; b < 3; b++) {
-        const list = segs[b];
-        if (!list.length) continue;
-        ctx.globalAlpha = BUCKET[b];
-        ctx.beginPath();
-        for (const a0 of list) ctx.ellipse(0, 0, r, r * KY, 0, a0, a0 + span * 1.06);
-        ctx.stroke();
-      }
-    }
-    ctx.globalAlpha = 1;
-    ctx.restore();
-  };
-
+  /* ---------- adegan (sprite, lihat ns-render.ts) ---------- */
+  const scene = createScene(ctx);
+  let low = false; // mode hemat: dipakai otomatis kalau frame terlalu lambat
+  const isDark = () => document.documentElement.dataset.theme === 'dark';
+  let darkMix = isDark() ? 1 : 0;
+  const drag = { vx: 0, vy: 0, held: false };
+  let pdx = 0, pdy = 0, ptime = performance.now();
   const drawHole = (t: number) => {
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, W, H);
-    const cx = W / 2;
-    const cy = H / 2;
-    const inner = Ri();
-
-    // piringan: setengah belakang (lewat di balik bola)
-    diskHalf(t, false);
-
-    /* pancaran pulsar di kedua sumbu rotasi — kabut lebar + inti sempit,
-       berkedip pelan dan sedikit berayun supaya tidak kaku */
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(ROLL + Math.PI / 2 + Math.sin(t * 0.35) * 0.05 + Math.sin(t * 1.1) * 0.018);
-    ctx.globalCompositeOperation = 'lighter';
-    const beamLen = Rs * 2.9; // dipangkas dari 3.5: kanvas cuma 337px, biar dua pancaran muat & simetris
-    const flick = 0.86 + 0.14 * Math.sin(t * 4.7) * Math.sin(t * 1.9 + 1.2);
-    const quad = (w0: number, w1: number, dir: number, len: number) => {
-      ctx.beginPath();
-      ctx.moveTo(-w0, 0);
-      ctx.lineTo(w0, 0);
-      ctx.lineTo(w1, dir * len);
-      ctx.lineTo(-w1, dir * len);
-      ctx.closePath();
-      ctx.fill();
-    };
-    for (const dir of [1, -1]) {
-      /* tanpa ctx.filter — filter blur di kanvas itu sangat mahal (fps anjlok ke 2).
-         Kelembutan dibuat dari beberapa lapis quad makin sempit + makin terang. */
-      const layers: [number, number, number][] = [
-        [0.4, 1.0, 0.18],
-        [0.22, 0.62, 0.3],
-        [0.07, 0.26, 0.6],
-      ];
-      for (const [wOut, lenF, a] of layers) {
-        const mist = ctx.createLinearGradient(0, 0, 0, dir * beamLen * lenF);
-        mist.addColorStop(0, `rgba(232,242,255,${a * flick})`);
-        mist.addColorStop(0.4, `rgba(150,194,255,${a * 0.5 * flick})`);
-        mist.addColorStop(1, 'rgba(86,126,255,0)');
-        ctx.fillStyle = mist;
-        quad(Rs * 0.07, Rs * wOut, dir, beamLen * lenF);
-      }
-    }
-    ctx.restore();
-
-    // pendar bintang neutron (denyut pelan + kedip kecil)
-    ctx.globalCompositeOperation = 'lighter';
-    const pulse = 0.86 + 0.14 * Math.sin(t * 2.1) + 0.05 * Math.sin(t * 5.7);
-    const bloom = ctx.createRadialGradient(cx, cy, Rs * 0.6, cx, cy, Rs * 3.4);
-    bloom.addColorStop(0, `rgba(226,240,255,${0.58 * pulse})`);
-    bloom.addColorStop(0.26, `rgba(150,186,255,${0.2 * pulse})`);
-    bloom.addColorStop(0.62, `rgba(96,134,246,${0.07 * pulse})`);
-    bloom.addColorStop(1, 'rgba(70,104,220,0)');
-    ctx.fillStyle = bloom;
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs * 3.4, 0, TAU);
-    ctx.fill();
-
-    // atmosfer di sekeliling bola — gradasi lembut, bukan tiga cincin keras
-    const halo = ctx.createRadialGradient(cx, cy, Rs * 0.98, cx, cy, Rs * 1.9);
-    halo.addColorStop(0, 'rgba(216,233,255,0.52)');
-    halo.addColorStop(0.3, 'rgba(150,190,255,0.2)');
-    halo.addColorStop(1, 'rgba(90,130,255,0)');
-    ctx.fillStyle = halo;
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs * 1.9, 0, TAU);
-    ctx.fill();
-
-    // bola bintang: gradien tebal dulu, permukaan & pencahayaan menyusul
-    ctx.globalCompositeOperation = 'source-over';
-    const body = ctx.createRadialGradient(cx - Rs * 0.3, cy - Rs * 0.34, Rs * 0.05, cx, cy, Rs);
-    body.addColorStop(0, '#ffffff');
-    body.addColorStop(0.38, '#f4f8ff');
-    body.addColorStop(0.72, '#d3e0ff');
-    body.addColorStop(1, '#93aef4');
-    ctx.fillStyle = body;
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs, 0, TAU);
-    ctx.fill();
-
-    // permukaan berputar: gumpalan panas & dingin, memipih saat mendekati tepi
-    // (garis meridian/lintang dihapus — itu yang bikin bentuknya seperti bola jaring)
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs * 0.996, 0, TAU);
-    ctx.clip();
-    const spin = t * 1.15;
-    const feats: [number, number, number, boolean][] = [
-      [0.0, 0.42, 0.6, true],
-      [1.7, 0.3, 0.45, false],
-      [2.9, 0.34, 0.52, true],
-      [4.2, 0.26, 0.42, false],
-      [5.4, 0.3, 0.44, true],
-    ];
-    for (const [ph, size, amp, hot] of feats) {
-      const a = ph + spin;
-      const ca = Math.cos(a);
-      if (ca <= 0.06) continue; // di sisi belakang
-      const x = cx + ca * Rs * 0.58;
-      const y = cy + Math.sin(a) * Rs * 0.3 - Rs * 0.05;
-      const squash = 0.3 + 0.7 * ca;
-      const alpha = Math.min(1, ca * 1.7) * amp;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(squash, 1);
-      const rg = ctx.createRadialGradient(0, 0, 0, 0, 0, Rs * size);
-      if (hot) {
-        rg.addColorStop(0, `rgba(255,255,255,${alpha})`);
-        rg.addColorStop(0.45, `rgba(255,244,224,${alpha * 0.5})`);
-        rg.addColorStop(1, 'rgba(255,240,210,0)');
-      } else {
-        rg.addColorStop(0, `rgba(74,104,208,${alpha * 0.55})`);
-        rg.addColorStop(0.5, `rgba(120,150,230,${alpha * 0.28})`);
-        rg.addColorStop(1, 'rgba(140,170,240,0)');
-      }
-      ctx.fillStyle = rg;
-      ctx.beginPath();
-      ctx.arc(0, 0, Rs * size, 0, TAU);
-      ctx.fill();
-      ctx.restore();
-    }
-    ctx.restore();
-
-    // sisi gelap (terminator) + limb darkening → bola, bukan lingkaran datar
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs, 0, TAU);
-    ctx.clip();
-    const term = ctx.createLinearGradient(cx - Rs * 0.75, cy - Rs * 0.75, cx + Rs * 0.95, cy + Rs * 0.95);
-    term.addColorStop(0, 'rgba(255,255,255,0)');
-    term.addColorStop(0.5, 'rgba(40,64,150,0)');
-    term.addColorStop(1, 'rgba(14,26,84,0.5)');
-    ctx.fillStyle = term;
-    ctx.fillRect(cx - Rs, cy - Rs, Rs * 2, Rs * 2);
-    const limb = ctx.createRadialGradient(cx, cy, Rs * 0.55, cx, cy, Rs);
-    limb.addColorStop(0, 'rgba(46,74,176,0)');
-    limb.addColorStop(0.78, 'rgba(46,74,176,0.14)');
-    limb.addColorStop(1, 'rgba(34,58,158,0.52)');
-    ctx.fillStyle = limb;
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs, 0, TAU);
-    ctx.fill();
-    const spec = ctx.createRadialGradient(cx - Rs * 0.34, cy - Rs * 0.42, 0, cx - Rs * 0.34, cy - Rs * 0.42, Rs * 0.55);
-    spec.addColorStop(0, 'rgba(255,255,255,0.72)');
-    spec.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = spec;
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs, 0, TAU);
-    ctx.fill();
-    ctx.restore();
-
-    // tepi bola: kilau Fresnel yang tajam
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.beginPath();
-    ctx.strokeStyle = 'rgba(238,246,255,0.9)';
-    ctx.lineWidth = Math.max(1.4, Rs * 0.035);
-    ctx.arc(cx, cy, Rs * 1.005, 0, TAU);
-    ctx.stroke();
-
-    // dua simpul panas yang mengorbit di piringan — tanda "ini berputar"
-    for (const [rad, phase, sp, w] of [
-      [inner * 1.3, 0.4, 1.7, 0.5],
-      [inner * 1.75, 2.5, 1.1, 0.38],
-    ] as const) {
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(ROLL);
-      ctx.globalCompositeOperation = 'lighter';
-      const a = phase + t * sp;
-      const grad = ctx.createLinearGradient(-rad, 0, rad, 0);
-      grad.addColorStop(0, `rgba(255,255,255,${w})`);
-      grad.addColorStop(1, `rgba(168,214,255,${w * 0.55})`);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = Math.max(2, rad * KY * 1.7);
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, rad, rad * KY, 0, a - 0.5, a + 0.5);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // piringan: setengah depan (menutupi bayangan bola)
-    diskHalf(t, true);
-
-    // cahaya yang lolos di tepi — redup & lembut, bukan cincin biru tebal
-    ctx.globalCompositeOperation = 'source-over';
-    const edge = ctx.createRadialGradient(cx, cy, Rs * 1.12, cx, cy, Rs * 1.75);
-    edge.addColorStop(0, 'rgba(120,150,255,0.3)');
-    edge.addColorStop(1, 'rgba(120,150,255,0)');
-    ctx.fillStyle = edge;
-    ctx.beginPath();
-    ctx.arc(cx, cy, Rs * 1.75, 0, TAU);
-    ctx.fill();
+    // kecepatan seret dari --dx/--dy, dihaluskan
+    const now = performance.now();
+    const dx = parseFloat(obj.style.getPropertyValue('--dx')) || 0;
+    const dy = parseFloat(obj.style.getPropertyValue('--dy')) || 0;
+    const ddt = Math.max(0.008, (now - ptime) / 1000);
+    drag.vx += ((dx - pdx) / ddt - drag.vx) * 0.18;
+    drag.vy += ((dy - pdy) / ddt - drag.vy) * 0.18;
+    pdx = dx; pdy = dy; ptime = now;
+    drag.held = obj.classList.contains('dragging');
+    darkMix += ((isDark() ? 1 : 0) - darkMix) * (REDUCED ? 1 : 0.08);
+    scene.draw(t, darkMix, drag);
   };
 
   /* ---------- kanvas sinar ---------- */
@@ -391,7 +146,7 @@ export function initBlackHole(): void {
     rctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     rctx.clearRect(0, 0, W, H);
     rctx.lineWidth = 1;
-    rctx.strokeStyle = 'rgba(27,26,31,0.16)';
+    rctx.strokeStyle = document.documentElement.dataset.theme === 'dark' ? 'rgba(255,240,236,0.16)' : 'rgba(60,14,20,0.18)';
     rays.forEach((ray, i) => {
       if (i === hoverIdx) return;
       rctx.beginPath();
@@ -405,7 +160,7 @@ export function initBlackHole(): void {
     if (hoverIdx >= 0 && rays[hoverIdx]) {
       const ray = rays[hoverIdx];
       rctx.lineWidth = 1.6;
-      rctx.strokeStyle = '#6b46c1';
+      rctx.strokeStyle = '#d11a2a';
       rctx.beginPath();
       ray.pts.forEach(([x, y], k) => {
         const px = W / 2 + x * Rs;
@@ -658,15 +413,41 @@ export function initBlackHole(): void {
     }
   };
 
-  /* ---------- loop utama ---------- */
+  /* ---------- loop utama ----------
+     - prefers-reduced-motion: bintang digambar diam satu kali; loop hanya hidup
+       selama ada yang diseret / kata yang sedang kembali.
+     - laptop lemah: kalau rata-rata frame > 26 ms, pindah ke mode hemat
+       (dpr 1, partikel separuh, tekstur lebih ringan) dan gambar di 30 fps. */
   let running = false;
   let visible = true;
   const t0 = performance.now();
+  let ema = 16;
+  let slowFrames = 0;
+  let lastFrame = 0;
+  let skip = false;
+  const wordsBusy = () => words.some((w) => w.active);
   const frame = (now: number) => {
     const t = (now - t0) / 1000;
-    drawHole(t); // putaran bintang tetap jalan, meski sistem minta kurangi animasi
+    if (!REDUCED) {
+      const gap = lastFrame ? now - lastFrame : 16;
+      lastFrame = now;
+      if (!skip) {
+        const s0 = performance.now();
+        drawHole(t);
+        const cost = performance.now() - s0;
+        ema = ema * 0.92 + Math.max(cost, low ? 0 : gap * 0.5) * 0.08;
+        if (!low && ema > 26) {
+          if (++slowFrames > 45) {
+            low = true;
+            resize();
+          }
+        } else slowFrames = 0;
+      }
+      if (low) skip = !skip; // 30 fps
+    }
     gravity(Math.min(0.032, 1 / 60));
-    running = visible && !document.hidden;
+    const keep = REDUCED ? obj.classList.contains('dragging') || wordsBusy() : true;
+    running = visible && !document.hidden && keep;
     if (running) requestAnimationFrame(frame);
   };
   const start = () => {
@@ -677,6 +458,16 @@ export function initBlackHole(): void {
   const stop = () => {
     running = false;
   };
+  if (REDUCED) {
+    obj.addEventListener('pointerdown', () => start());
+    new MutationObserver(() => {
+      darkMix = isDark() ? 1 : 0;
+      drawHole(14);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && visible && !REDUCED) start();
+  });
 
   document.querySelectorAll<HTMLElement>('.desk-object').forEach(initDrag);
   zones.forEach(splitWords);
@@ -690,7 +481,7 @@ export function initBlackHole(): void {
 
   new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
-    if (visible) start();
+    if (visible && !REDUCED) start();
     else stop();
   }).observe(obj);
 
@@ -722,5 +513,5 @@ export function initBlackHole(): void {
     measure();
   });
 
-  start();
+  if (!REDUCED) start();
 }
