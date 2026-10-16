@@ -1,29 +1,40 @@
 ---
 import Base from '../layouts/Base.astro';
-
-const diperbarui = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+/* Tanggal ditulis tangan: halaman "now" hanya benar per tanggal ini.
+   Perbarui tanggalnya setiap kali isinya diubah. */
+const diperbarui = '16 Oktober 2026';
 ---
 <Base title="Now · Muhammad Maftuh" active="now">
   <section class="prose">
-    <p class="label">Terakhir diperbarui {diperbarui}</p>
+    <p class="label">Terakhir diperbarui {diperbarui} · Bandung</p>
     <p>
-      Menjalankan <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a> — situs
-      agensi dengan pembayaran QRIS dan tagihan PDF yang dibuat di sisi server.
+      <strong style="color:var(--ink)">Neovarch Agent</strong> sedang di versi 1.4.8. Fokus saya sekarang: membuat
+      HP benar-benar nyaman jadi remote untuk agen yang jalan di PC — sambungan lewat Tailscale lebih dulu, lalu LAN
+      — dan merapikan “otak” agennya (Tempest) yang kini jadi bawaan.  <a class="link" href="https://www.neovarchagent.web.id">neovarchagent.web.id</a>
     </p>
     <p>
-      Mengerjakan <em>Nalar.Ai</em>, asisten AI edukasi berbasis RAG, dan merapikan beberapa proyek
-      sampingan: <em>Pagarnet</em> (ekstensi anti-judol), <em>BatikLens</em>, serta pelbagai perkakas
-      otomasi.
+      Di <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a>, alur pesanan klien baru selesai:
+      bayar langsung setelah memesan, status pembayaran terdeteksi otomatis, lalu pesanan bergerak dari dibayar ke
+      dikerjakan, serah terima, dan selesai — terlihat dari dasbor klien sendiri.
     </p>
     <p>
-      Model dan dataset saya unggah ke
-      <a class="link" href="https://huggingface.co/maftuh-main">huggingface.co/maftuh-main</a>
-      (8 model, 5 Space, 1 dataset).
+      Untuk coding agent, saya baru merilis tiga perkakas kecil yang open source:
+      <a class="link" href="https://github.com/Maftuuh1922/leave-no-trace">leave-no-trace</a>,
+      <a class="link" href="https://github.com/Maftuuh1922/not-mine">not-mine</a>, dan
+      <a class="link" href="https://github.com/Maftuuh1922/catch-22-skill">catch-22-skill</a>. Semuanya jalan di
+      agent apa pun yang bisa menjalankan shell.
     </p>
     <p>
-      Ingin ngobrol soal pengembangan web, AI, atau sesuatu yang menurut Anda menarik? Tulis saja di
-      <a class="link" href="/contact">halaman kontak</a> — email, GitHub, Hugging Face, dan LinkedIn
-      ada di sana, lengkap dengan CV yang bisa diunduh.
+      Di desktop saya pakai Omarchy, jadi sebagian waktu habis untuk ekosistemnya: Boxtop (sudah di marketplace
+      plugin), tema Neovarch Glass, dan Omarchy Pocket untuk mengendalikan desktop dari HP.
+    </p>
+    <p>
+      Proyek sampingan yang belum terbit: <em>Kabur dari Pocong</em>, game horor co-op Roblox, dan
+      <em>Kisah Adab Studio</em>, perkakas untuk serial Shorts anak tentang adab.
+    </p>
+    <p>
+      Ingin ngobrol soal agen AI, web, atau proyek bareng? Semua kontak — email, GitHub, Hugging Face, LinkedIn,
+      plus CV — ada di <a class="link" href="/contact">halaman kontak</a>.
     </p>
   </section>
 </Base>

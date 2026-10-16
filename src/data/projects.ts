@@ -44,7 +44,7 @@ export const projects: Project[] = [
     tags: ['web'],
     status: 'produksi',
     lead:
-      'Studio kecil saya untuk situs dan aplikasi web. Situsnya sekaligus sistem pemesanan: klien memilih paket, langsung membayar (QRIS, Virtual Account, Indomaret, Alfamart, Akulaku lewat DOKU), status pembayaran terdeteksi otomatis, lalu invoice dan kwitansi dikirim lewat email. Pesanan bisa dipantau klien di dasbornya sendiri.',
+      'Studio kecil saya untuk situs dan aplikasi web. Situsnya sekaligus sistem pemesanan: klien memilih paket dan langsung membayar dengan QRIS lewat DOKU, status pembayaran terdeteksi otomatis tanpa admin, lalu invoice dan kwitansi dikirim lewat email. Pesanan bergerak dari dibayar sampai selesai, dan klien memantaunya di dasbornya sendiri.',
     stack: ['Next.js', 'Tailwind', 'Prisma', 'Turso', 'DOKU', 'Resend'],
     links: [{ label: 'Situs', href: 'https://www.neovarchlabs.web.id' }, { label: 'Studi kasus', href: '/work/neovarchlabs' }],
     img: '/work/neovarchlabs.webp',
@@ -171,8 +171,8 @@ export const projects: Project[] = [
     name: 'Wastra.ai',
     tags: ['ai', 'web'],
     status: 'live',
-    lead: 'Kenali, pelajari, dan kreasikan motif batik Nusantara di genggaman — dengan backend API terpisah.',
-    stack: ['Next.js', 'TypeScript'],
+    lead: 'Kenali, pelajari, dan kreasikan motif batik Nusantara dari genggaman. Backend API terpisah, dengan model deteksi YOLOv8 dan generator LoRA dari akun Hugging Face saya.',
+    stack: ['Next.js', 'TypeScript', 'YOLOv8', 'LoRA'],
     links: [
       { label: 'Situs', href: 'https://wastra-plum.vercel.app' },
       gh('wastra'),

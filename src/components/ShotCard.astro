@@ -1,0 +1,15 @@
+---
+/* kartu rak beranda: tangkapan layar asli di dalam muka kartu kaca */
+import type { Project } from '../data/projects';
+const { p } = Astro.props as { p: Project };
+---
+<figure class="card" data-tags={p.tags.join(' ')}>
+  <div class="card-face card-shot">
+    {p.img && <img src={p.img} alt={p.imgAlt} width="800" height="500" loading="lazy" decoding="async" />}
+    <p class="card-note">{p.status}</p>
+  </div>
+  <figcaption class="card-cap">
+    <a class="card-name" href={`/work#${p.slug}`}>{p.name}</a>
+    <span class="card-desc">{p.stack.slice(0, 3).join(' · ')}</span>
+  </figcaption>
+</figure>

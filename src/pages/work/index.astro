@@ -2,168 +2,65 @@
 import Base from '../../layouts/Base.astro';
 import Shelf from '../../components/Shelf.astro';
 import Card from '../../components/Card.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import Heatmap from '../../components/Heatmap.astro';
+import { projects } from '../../data/projects';
 import { fetchStats } from '../../lib/stats';
 import { fetchContrib } from '../../lib/contrib';
-import Heatmap from '../../components/Heatmap.astro';
 
 const { stats } = await fetchStats();
 const { data: contrib, live: contribLive } = await fetchContrib();
+const maxLang = Math.max(1, ...stats.langs.map(([, n]) => n));
 
 const filter = [
   { v: 'all', l: 'Semua' },
-  { v: 'web', l: 'Web' },
+  { v: 'agent', l: 'Agent AI' },
   { v: 'ai', l: 'AI' },
-  { v: 'ext', l: 'Ekstensi' },
+  { v: 'web', l: 'Web' },
+  { v: 'linux', l: 'Linux' },
   { v: 'mobile', l: 'Mobile' },
-  { v: 'data', l: 'Data' },
-];
+  { v: 'game', l: 'Game' },
+  { v: 'ext', l: 'Ekstensi' },
+].filter((f) => f.v === 'all' || projects.some((p) => p.tags.includes(f.v)));
 ---
 <Base title="Work · Muhammad Maftuh" active="work">
   <section class="prose">
     <p>
-      Beberapa yang saya bangun — tiap kartu punya demo yang benar-benar berjalan di dalamnya, bisa
-      diklik. Dua kartu teratas membuka <a class="link" href="/work/nalar-ai">studi kasus</a>
-      yang ditulis lebih lengkap. Repositori dan tumpukan teknologi saya ada di bawah.
+      {projects.length} proyek yang saya bangun sendiri atau pimpin — dari agen AI yang jalan di PC sendiri, perkakas
+      keamanan untuk coding agent, sampai plugin desktop Linux dan game Roblox. Tiap kartu memakai tangkapan layar
+      asli dari situs live atau repositorinya; yang belum punya, saya biarkan kosong.
     </p>
   </section>
 
-  <div class="filters" role="group" aria-label="Saring karya">
-    {
-      filter.map((f) => (
-        <button type="button" class="filter-btn" data-filter={f.v} aria-pressed={f.v === 'all'}>
-          {f.l}
-        </button>
-      ))
-    }
+  <div class="work-wrap">
+    <div class="filters" role="group" aria-label="Saring karya">
+      {
+        filter.map((f) => (
+          <button type="button" class="filter-btn" data-filter={f.v} aria-pressed={f.v === 'all' ? 'true' : 'false'}>
+            {f.l}
+          </button>
+        ))
+      }
+      <span class="filter-count" id="filter-count" aria-live="polite">{projects.length} proyek</span>
+    </div>
+    <div class="work-grid" id="work-grid">
+      {projects.map((p) => <ProjectCard p={p} />)}
+    </div>
   </div>
-
-  <Shelf label="Karya" caption="Karya pilihan">
-    <Card
-      name="Nalar.Ai"
-      href="/work/nalar-ai"
-      tags="ai web"
-      desc="asisten AI edukasi · RAG &amp; analisis dokumen · TypeScript"
-      note="situs live · landing page resmi"
-    >
-      <div class="live-frame">
-        <iframe
-          src="https://landingpage-kappa-eight.vercel.app/"
-          title="Nalar.Ai — situs live"
-          loading="lazy"
-          tabindex="-1"></iframe>
-        <a class="live-tag" href="https://landingpage-kappa-eight.vercel.app/" target="_blank" rel="noopener">live</a>
-      </div>
-    </Card>
-
-    <Card
-      name="Pagarnet"
-      href="https://github.com/Maftuuh1922/Pagarnet"
-      tags="ext"
-      desc="ekstensi anti-judol · HTML, JS"
-      note="blokir real-time · tanpa izin tambahan"
-    >
-      <div class="block-ui">
-        <div class="row" style="align-items:flex-end">
-          <div>
-            <div class="big" id="pg-count">0</div>
-            <div style="font-size:10px;color:var(--mute)">domain judi diblokir</div>
-          </div>
-          <div style="font-size:10px;color:#2f9155">● aktif</div>
-        </div>
-        <div style="margin-top:8px" id="pg-tags"></div>
-      </div>
-    </Card>
-
-    <Card
-      name="BatikLens"
-      href="https://github.com/Maftuuh1922/batiklens-ai-powered-heritage-explorer"
-      tags="ai web"
-      desc="eksplorasi batik bertenaga AI · TypeScript"
-      note="demo langsung dari situs live"
-    >
-      <div class="live-frame">
-        <iframe
-          src="https://batiklens-ai-powered-heritage-explo.vercel.app"
-          title="BatikLens — situs live"
-          loading="lazy"
-          tabindex="-1"></iframe>
-        <a class="live-tag" href="https://batiklens-ai-powered-heritage-explo.vercel.app" target="_blank" rel="noopener">live</a>
-      </div>
-    </Card>
-
-    <Card
-      name="Wastra.ai"
-      href="https://github.com/Maftuuh1922/wastra"
-      tags="ai web"
-      desc="kenali, pelajari &amp; kreasi motif batik Nusantara · TypeScript"
-      note="situs live · wastra-plum.vercel.app"
-    >
-      <div class="live-frame">
-        <iframe
-          src="https://wastra-plum.vercel.app"
-          title="Wastra.ai — situs live"
-          loading="lazy"
-          tabindex="-1"></iframe>
-        <a class="live-tag" href="https://wastra-plum.vercel.app" target="_blank" rel="noopener">live</a>
-      </div>
-    </Card>
-
-    <Card
-      name="NeovarchLabs"
-      href="/work/neovarchlabs"
-      tags="web"
-      desc="situs agensi + tagihan QRIS · Next.js"
-      note="studi kasus · PDF invoice di sisi server"
-    >
-      <div class="qris">
-        <div style="font-size:9.5px;color:var(--mute)">INVOICE · NVL-0142</div>
-        <div class="qr"></div>
-        <div>Rp 1.750.000</div>
-        <div class="paid" style="margin-top:5px">✓ LUNAS via QRIS</div>
-      </div>
-    </Card>
-
-    <Card
-      name="aplikasi_berita"
-      href="https://github.com/Maftuuh1922/aplikasi_berita"
-      tags="mobile"
-      desc="klien berita · Dart"
-      note="gulir otomatis · Flutter"
-    >
-      <div class="feed"><ul id="feed"></ul></div>
-    </Card>
-
-    <Card
-      name="sales-management"
-      href="https://github.com/Maftuuh1922/sales-management"
-      tags="data"
-      desc="manajemen penjualan · Dart"
-      note="omzet minggu ini"
-    >
-      <div class="chart" id="chart">
-        <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-        <div class="y"><span>sen</span><span>sel</span><span>rab</span><span>kam</span><span>jum</span><span>sab</span><span>min</span></div>
-      </div>
-    </Card>
-  </Shelf>
 
   <Shelf label="Di GitHub dan Hugging Face" caption="Di GitHub & Hugging Face">
     <Card
       name="Hugging Face"
       href="https://huggingface.co/maftuh-main"
-      desc={`model, dataset & Space · QLoRA · ${stats.models} model`}
-      note="Domain Expert AI · batik, NLP"
+      desc={`model, dataset & Space · ${stats.models} model`}
+      note="huggingface.co/maftuh-main"
     >
       <div class="sheet">
         <h4>maftuh-main</h4>
-        <div class="row"><span>model</span><b id="hf-models" data-target={stats.models}>0</b></div>
-        <div class="bar"><i class="lang" data-v="100"></i></div>
-        <div class="row"><span>Space</span><b id="hf-spaces" data-target={stats.spaces}>0</b></div>
-        <div class="bar"><i class="lang" data-v="62"></i></div>
-        <div class="row"><span>dataset</span><b id="hf-data" data-target={stats.datasets}>0</b></div>
-        <div class="bar"><i class="lang" data-v="14"></i></div>
+        <div class="row"><span>model</span><b id="hf-models" data-target={stats.models}>{stats.models}</b></div>
+        <div class="row"><span>Space</span><b id="hf-spaces" data-target={stats.spaces}>{stats.spaces}</b></div>
+        <div class="row"><span>dataset</span><b id="hf-data" data-target={stats.datasets}>{stats.datasets}</b></div>
         <div class="row" style="margin-top:6px"><span>andalan</span><b>batik-qwen1.5b</b></div>
-        <div class="row"><span>teknik</span><b>QLoRA · sintetis</b></div>
       </div>
     </Card>
 
@@ -171,67 +68,18 @@ const filter = [
       name="Profil GitHub"
       href="https://github.com/Maftuuh1922?tab=repositories"
       desc={`Maftuuh1922 · ${stats.followers} followers`}
-      note="sejak 22 September 2023"
+      note="bahasa utama repo publik · dihitung saat build"
     >
       <div class="sheet">
         <h4>{stats.repos} repositori publik</h4>
-        <div class="row"><span>TypeScript</span><b>15</b></div><div class="bar"><i class="lang" data-v="100"></i></div>
-        <div class="row"><span>JavaScript</span><b>7</b></div><div class="bar"><i class="lang" data-v="47"></i></div>
-        <div class="row"><span>Dart</span><b>5</b></div><div class="bar"><i class="lang" data-v="33"></i></div>
-        <div class="row"><span>Python</span><b>4</b></div><div class="bar"><i class="lang" data-v="27"></i></div>
-        <div class="row"><span>PHP · HTML · C++</span><b>7</b></div><div class="bar"><i class="lang" data-v="40"></i></div>
-      </div>
-    </Card>
-
-    <Card
-      name="Maftuuh1922"
-      href="https://github.com/Maftuuh1922/Maftuuh1922"
-      desc="statistik profil otomatis · Python"
-      note="README profil · Python"
-    >
-      <div class="window" style="background:#0f1117;width:82%">
-        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">maftuuh1922 — zsh</span></div>
-        <div class="term" id="readme-term"></div>
-      </div>
-    </Card>
-
-    <Card
-      name="Nalar.ai-be"
-      href="https://github.com/Maftuuh1922/Nalar.ai-be"
-      desc="API RAG &amp; indeks dokumen · Python"
-      note="GET /health 200"
-    >
-      <div class="window" style="background:#101418">
-        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">nalar.ai-be — uvicorn</span></div>
-        <div class="term" id="be-term"></div>
-      </div>
-    </Card>
-
-    <Card
-      name="plantcare-ai"
-      href="https://github.com/Maftuuh1922/plantcare-ai-intelligent-plant-disease-detection"
-      desc="deteksi penyakit tanaman · TS"
-      note="deteksi penyakit tanaman"
-    >
-      <div class="sheet">
-        <h4>diagnosis daun</h4>
-        <div class="row"><span>penyakit</span><b>early blight</b></div>
-        <div class="row"><span>keyakinan</span><b>94,2%</b></div>
-        <div class="bar"><i class="lang" data-v="94"></i></div>
-        <div class="row"><span>kelas</span><b>12 tersedia</b></div>
-        <div class="row" style="margin-top:6px"><span>latih</span><b>ResNet-50</b></div>
-      </div>
-    </Card>
-
-    <Card
-      name="communicate-using-markdown"
-      href="https://github.com/Maftuuh1922/skills-communicate-using-markdown"
-      desc="panduan komunikasi tertulis"
-      note="#markdown · gaya tulis teknis"
-    >
-      <div class="window" style="background:#1b1b20">
-        <div class="window-bar"><i></i><i></i><i></i><span class="window-title">README.md</span></div>
-        <div class="term" id="md-term"></div>
+        {
+          stats.langs.slice(0, 5).map(([l, n]) => (
+            <>
+              <div class="row"><span>{l}</span><b>{n}</b></div>
+              <div class="bar"><i class="lang" data-v={Math.round((n / maxLang) * 100)}></i></div>
+            </>
+          ))
+        }
       </div>
     </Card>
   </Shelf>
@@ -243,25 +91,25 @@ const filter = [
 </Base>
 
 <script>
-  import { startWorkDemos } from '../../scripts/demos';
-  startWorkDemos();
+  import { bahasa } from '../../scripts/demos';
+  bahasa();
 
-  /* saring karya per tag */
-  const track = document.querySelectorAll<HTMLElement>('.shelf-track')[0];
+  const grid = document.getElementById('work-grid');
+  const count = document.getElementById('filter-count');
   const btns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
-  if (track) {
-    const cards = track.querySelectorAll<HTMLElement>('.card');
+  if (grid) {
+    const cards = grid.querySelectorAll<HTMLElement>('.pcard');
     btns.forEach((b) =>
       b.addEventListener('click', () => {
         const f = b.dataset.filter ?? 'all';
         btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        let n = 0;
         cards.forEach((c) => {
-          const tags = (c.dataset.tags ?? '').split(/\s+/);
-          c.hidden = !(f === 'all' || tags.includes(f));
+          const on = f === 'all' || (c.dataset.tags ?? '').split(/\s+/).includes(f);
+          c.hidden = !on;
+          if (on) n++;
         });
-        track.scrollTo({ left: 0, behavior: 'smooth' });
-        /* rak menghitung ulang panah + posisi 1/N */
-        setTimeout(() => window.dispatchEvent(new Event('resize')), 80);
+        if (count) count.textContent = `${n} proyek`;
       }),
     );
   }
