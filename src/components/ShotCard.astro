@@ -1,7 +1,9 @@
 ---
 /* kartu rak beranda: tangkapan layar asli di dalam muka kartu kaca */
 import type { Project } from '../data/projects';
+import { localePath, asLang } from '../i18n';
 const { p } = Astro.props as { p: Project };
+const lang = asLang(Astro.props.lang ?? Astro.currentLocale);
 ---
 <figure class="card" data-tags={p.tags.join(' ')}>
   <div class="card-face card-shot">
@@ -9,7 +11,7 @@ const { p } = Astro.props as { p: Project };
     <p class="card-note">{p.status}</p>
   </div>
   <figcaption class="card-cap">
-    <a class="card-name" href={`/work#${p.slug}`}>{p.name}</a>
+    <a class="card-name" href={`${localePath(lang, '/work')}#${p.slug}`}>{p.name}</a>
     <span class="card-desc">{p.stack.slice(0, 3).join(' · ')}</span>
   </figcaption>
 </figure>

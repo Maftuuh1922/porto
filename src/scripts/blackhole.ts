@@ -171,8 +171,8 @@ export function initBlackHole(): void {
       if (readout) {
         readout.classList.add('is-live');
         readout.textContent = ray.captured
-          ? `b = ${Math.abs(ray.b).toFixed(2)} R < ${SHELL.toFixed(2)} R · menembus permukaan`
-          : `b = ${Math.abs(ray.b).toFixed(2)} R · ditekuk ${ray.defl.toFixed(0)}°`;
+          ? `b = ${Math.abs(ray.b).toFixed(2)} R < ${SHELL.toFixed(2)} R · ${readout.dataset.captured || 'menembus permukaan'}`
+          : `b = ${Math.abs(ray.b).toFixed(2)} R · ${readout.dataset.bent || 'ditekuk'} ${ray.defl.toFixed(0)}°`;
       }
       void live;
     }

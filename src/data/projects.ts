@@ -16,6 +16,8 @@ export type Project = {
   imgAlt?: string;
   imgSrc?: string; // asal gambar, ditulis kecil di kartu
   featured?: boolean;
+  /** versi English; teks Indonesia di atas tetap jadi sumber untuk /id */
+  en?: { status: string; lead: string; imgAlt?: string; imgSrc?: string };
 };
 
 const gh = (r: string): Link => ({ label: 'GitHub', href: `https://github.com/Maftuuh1922/${r}` });
@@ -291,5 +293,152 @@ export const projects: Project[] = [
     links: [gh('Tunein')],
   },
 ];
+
+/* ---- English ---- */
+const EN: Record<string, NonNullable<Project['en']>> = {
+  'neovarch-agent': {
+    status: 'v1.4.8 · active',
+    lead:
+      'An AI agent that runs on your own PC (Windows, Linux) and is controlled from your Android phone. The desktop is the core — chat with tools, sessions, skills, memory, a Kanban board, data stored in ~/.neovarch — while the phone simply acts as a remote through QR pairing. It works with any model that speaks the /chat/completions API: OpenAI, OpenRouter, Groq, DeepSeek, Ollama, or a local server.',
+    imgAlt: 'Home page of neovarchagent.web.id: the headline “An AI agent on your PC, controlled from your phone” with a red-striped mascot illustration',
+    imgSrc: 'live site',
+  },
+  neovarchlabs: {
+    status: 'in production',
+    lead:
+      'My small studio for websites and web apps. The site doubles as the ordering system: clients pick a package and pay right away with QRIS through DOKU, payment status is detected automatically with no admin involved, and the invoice and receipt go out by email. Orders move from paid to done, and clients follow them on their own dashboard.',
+    imgAlt: 'Home page of neovarchlabs.web.id: pixel lettering “Neovarch Labs — We Make You See” on a dark background',
+    imgSrc: 'live site',
+  },
+  'nalar-ai': {
+    status: 'landing page live',
+    lead:
+      'An educational AI assistant with RAG and live document analysis: answers are referenced back to their source documents. TypeScript frontend, with a separate Python backend (Nalar.ai-be) for document indexing and search.',
+    imgAlt: 'Nalar.Ai landing page: the large headline “Kecerdasan yang berevolusi untuk Anda” (“Intelligence that evolves for you”) on a blue background',
+    imgSrc: 'live site',
+  },
+  boxtop: {
+    status: 'v1.5 · Omarchy marketplace',
+    lead:
+      'A btop-style bar widget for Omarchy (Quickshell): CPU, memory, network, and processes in a liquid-glass panel. It has a ≥ 4.5:1 contrast guard, accents taken from the wallpaper, presets, and a built-in updater. Listed on the Omarchy plugin marketplace.',
+    imgAlt: 'Omarchy desktop with the Boxtop panel on the right showing a CPU graph and a process list',
+    imgSrc: 'README image',
+  },
+  'leave-no-trace': {
+    status: 'open source',
+    lead:
+      'Snapshots the machine before a coding-agent session, compares it afterwards, then prints a “receipt” of every trace left outside the requested diff: junk files, global packages, dotfiles, agent config, processes and ports still running, cron/systemd. Every line comes with evidence, and lnt revert --apply rolls it back.',
+    imgAlt: 'Leave No Trace banner: “Your AI agent made a mess. See every trace — and undo it.”',
+    imgSrc: 'README image',
+  },
+  'not-mine': {
+    status: 'open source',
+    lead:
+      'One ownership check before an agent kills a process, deletes a file, or deploys something that isn’t its own. An Agent Skill plus a single-file, zero-dependency Python CLI that runs in any agent that can execute shell commands.',
+    imgAlt: 'not-mine banner: “Your agent is about to kill a process that isn’t its. Not Mine stops it.”',
+    imgSrc: 'README image',
+  },
+  'catch-22': {
+    status: 'open source',
+    lead:
+      'When the tests truly can’t pass, the agent should say so instead of deleting them. It detects contradictory specifications (issue vs. tests), gives line-by-line evidence and a repro script, then hands the decision to a human.',
+    imgAlt: 'Catch-22 banner: “When the tests can’t pass, your agent should say so — not delete them.”',
+    imgSrc: 'README image',
+  },
+  'omarchy-pocket': {
+    status: 'early development',
+    lead:
+      'Control your real Omarchy desktop from an Android phone, no flashing required. The pocketd daemon forwards wayvnc over a TLS WebSocket (token + certificate pinning, LAN/Tailscale only), alongside a bar plugin and an Android app with its own RFB client.',
+    imgAlt: 'Wireframes of five Omarchy Pocket Android screens: pairing, app drawer, workspace, terminal',
+    imgSrc: 'wireframe from the repo',
+  },
+  'neovarch-glass': {
+    status: 'open source',
+    lead:
+      'An Omarchy v4 theme: dark liquid-glass surfaces, vermilion red accents, white-mint text, no gradients. A halftone chrome star wallpaper in eight color variants.',
+    imgAlt: 'Neovarch Glass theme preview: a red-and-black desktop with a glass terminal window',
+    imgSrc: 'README image',
+  },
+  batiklens: {
+    status: 'live',
+    lead:
+      'Recognizes batik motifs from the camera or a photo, then explains the philosophy behind them. In-browser classification with TensorFlow.js (MobileNet), a backend on Cloudflare Workers, plus a catalog, a 3D museum, and challenges.',
+    imgAlt: 'BatikLens home page: the headline “Menyingkap Jiwa Batik” (“Unveiling the Soul of Batik”) with a Start Scan button',
+    imgSrc: 'live site',
+  },
+  wastra: {
+    status: 'live',
+    lead:
+      'Recognize, learn about, and create Indonesian (Nusantara) batik motifs right from your phone. A separate API backend, with a YOLOv8 detection model and a LoRA generator from my Hugging Face account.',
+    imgAlt: 'Wastra.ai home page: “Kenali Motif Batik di Genggaman Anda” (“Recognize batik motifs in the palm of your hand”) with a photo of a batik artisan',
+    imgSrc: 'live site',
+  },
+  pagarnet: {
+    status: 'open source',
+    lead:
+      'A Chrome extension that blocks online gambling sites, hidden ads, and scams in real time. Its install guide is written step by step for non-technical users.',
+  },
+  pocong: {
+    status: 'in development · unreleased',
+    lead:
+      'A co-op Roblox horror game for 1–6 players in a village at night: collect key fragments, switch on your flashlight, and run from the hopping pocong. Three rotating maps, a lobby with rooms, and the Dukun (shaman) and Peronda (night watch) roles.',
+    imgAlt: 'Game thumbnail: three Roblox avatars running with flashlights down a foggy village road, chased by a pocong',
+    imgSrc: 'game thumbnail',
+  },
+  'kisah-adab': {
+    status: 'in development · private',
+    lead:
+      'A local tool for producing a children’s YouTube Shorts series about Islamic manners (adab): visual clips combined with its own TTS narration, music that automatically ducks under the narration, and loudness normalization. Every episode is still approved by a human.',
+    imgAlt: 'Kisah Adab Studio app icon: an open book with a crescent moon and a star',
+    imgSrc: 'app icon',
+  },
+  fotobooth: {
+    status: 'live',
+    lead: 'A vintage photobooth in the browser: take or upload a photo, pick from 56 frames and 83 stickers, then download the print.',
+    imgAlt: 'fotobooth page: a wooden photo booth with “take a photo” and “upload photo” buttons',
+    imgSrc: 'live site',
+  },
+  amoures: {
+    status: 'live',
+    lead: 'A tour operator website: tour packages, destinations, and B2B partnerships, with package search on the home page.',
+    imgAlt: 'Amoures home page: “Jelajahi Dunia Bersama Amoures” (“Explore the world with Amoures”) over a photo of a lake and boats',
+    imgSrc: 'live site',
+  },
+  eighteen: {
+    status: 'live',
+    lead: 'A cinematic 18th-birthday journey — personal wishes told in scrolling chapters.',
+    imgAlt: 'One chapter of the Eighteen site: a white quote on a dark background',
+    imgSrc: 'live site',
+  },
+  sales: {
+    status: 'archived',
+    lead: 'A sales management app: products, customers, transactions, and a sales summary dashboard.',
+    imgAlt: 'Main menu screen of the sales-management app: Dashboard, Add, Update, Logout',
+    imgSrc: 'README image',
+  },
+  berita: {
+    status: 'archived',
+    lead: 'A news portal client: categories, search, trending news, dark/light mode, with its own API backend.',
+    imgAlt: 'Home screen of the news app: search field, trending news cards, latest news list',
+    imgSrc: 'README image',
+  },
+  tunein: {
+    status: 'MVP',
+    lead: 'Music social media — every post is the song you’re listening to plus a caption. Friends can play a 30-second preview, like, comment, and follow.',
+  },
+};
+for (const p of projects) p.en = EN[p.slug];
+
+const LINK_EN: Record<string, string> = { Situs: 'Site', 'Studi kasus': 'Case study' };
+
+/** proyek dalam bahasa yang diminta; tautan internal ikut diberi awalan /id */
+export function localize(p: Project, lang: 'en' | 'id'): Project {
+  const links = p.links.map((l) => ({
+    label: lang === 'en' ? (LINK_EN[l.label] ?? l.label) : l.label,
+    href: l.href.startsWith('/') && lang === 'id' ? `/id${l.href}` : l.href,
+  }));
+  if (lang === 'id' || !p.en) return { ...p, links };
+  return { ...p, ...p.en, links };
+}
 
 export const featured = projects.filter((p) => p.featured);

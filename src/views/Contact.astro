@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+import { fetchStats } from '../lib/stats';
+import { t, type Lang } from '../i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const en = lang === 'en';
+const EMAIL = 'maftuhade123@gmail.com';
+const { stats } = await fetchStats();
+
+const kanal = [
+  { label: 'Email', nilai: EMAIL, href: `mailto:${EMAIL}`, ket: en ? 'fastest reply' : 'balasan paling cepat' },
+  { label: 'GitHub', nilai: 'github.com/Maftuuh1922', href: 'https://github.com/Maftuuh1922', ket: en ? `${stats.repos} public repositories` : `${stats.repos} repositori publik` },
+  { label: 'Hugging Face', nilai: 'huggingface.co/maftuh-main', href: 'https://huggingface.co/maftuh-main', ket: en ? `${stats.models} models · ${stats.spaces} Spaces` : `${stats.models} model · ${stats.spaces} Space` },
+  { label: 'LinkedIn', nilai: 'in/muhammad-maftuh-798331386', href: 'https://www.linkedin.com/in/muhammad-maftuh-798331386', ket: en ? 'profile & experience' : 'profil & pengalaman' },
+];
+---
+<Base title="Contact · Muhammad Maftuh" active="contact" lang={lang}>
+  <section class="prose">
+    <p class="label">{en ? 'Contact' : 'Kontak'}</p>
+    {
+      en ? (
+        <p>
+          Have a project, a collaboration, or just want to chat about the web and AI? Pick a channel below — email gets
+          the fastest reply, and every link points to my official accounts.
+        </p>
+      ) : (
+        <p>
+          Ada proyek, kerja sama, atau sekadar mau ngobrol soal web dan AI? Pilih kanal di bawah —
+          email paling cepat saya balas, dan semua tautan mengarah ke akun resmi saya.
+        </p>
+      )
+    }
+  </section>
+
+  <section class="block">
+    <ul class="contact-list">
+      {
+        kanal.map((k) => (
+          <li>
+            <a class="contact-row" href={k.href} target={k.href.startsWith('mailto:') ? undefined : '_blank'} rel="noopener">
+              <span class="contact-label">{k.label}</span>
+              <span class="contact-value">{k.nilai}</span>
+              <span class="contact-note">{k.ket}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="block">
+    <p class="label">{en ? 'Attachment' : 'Lampiran'}</p>
+    <a class="btn-cv" href={t(lang).cv} download>
+      {en ? 'Download CV (PDF)' : 'Unduh CV (PDF)'}
+      <span aria-hidden="true">↓</span>
+    </a>
+    <p class="cv-note">
+      {
+        en
+          ? 'Profile summary, skills, and selected projects — in English. '
+          : 'Ringkasan profil, keahlian, dan proyek pilihan — dalam Bahasa Indonesia. '
+      }
+      <a class="link" href={t(en ? 'id' : 'en').cv} download>{en ? 'Versi Bahasa Indonesia' : 'English version'}</a>
+    </p>
+  </section>
+</Base>

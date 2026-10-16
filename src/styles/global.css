@@ -55,19 +55,23 @@ em{font-style:italic;color:var(--ink)}
   mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%)}
 .page-bg::before,.page-bg::after{
   content:"";position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;
-  background-position:center 70%;
+  background-position:center var(--hero-y,70%);
   -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   mask-image:linear-gradient(to bottom,#000 0,#000 46%,transparent 100%);
   transition:opacity .8s cubic-bezier(.4,0,.2,1)}
-.page-bg::before{background-image:url('/bg/mascot.webp');opacity:1}
-.page-bg::after{background-image:url('/bg/mascot-dark.webp');opacity:0}
+.page-bg::before{background-image:url('/art/hero-light-1920.webp');background-image:image-set(url('/art/hero-light-1920.webp') 1x,url('/art/hero-light-3200.webp') 2x);opacity:1}
+.page-bg::after{background-image:url('/art/hero-dark-1920.webp');background-image:image-set(url('/art/hero-dark-1920.webp') 1x,url('/art/hero-dark-3200.webp') 2x);opacity:0}
+@media (max-width:640px){
+  .page-bg::before{background-image:url('/art/hero-light-m-1100.webp');background-image:image-set(url('/art/hero-light-m-700.webp') 1x,url('/art/hero-light-m-1100.webp') 2x)}
+  .page-bg::after{background-image:url('/art/hero-dark-m-1100.webp');background-image:image-set(url('/art/hero-dark-m-700.webp') 1x,url('/art/hero-dark-m-1100.webp') 2x)}
+}
 html[data-theme=dark] .page-bg::before{opacity:0}
 html[data-theme=dark] .page-bg::after{opacity:1}
 /* tanpa animasi: matikan pseudo, gambar langsung di layer utama (satu file per mode) */
 @media (prefers-reduced-motion:reduce){
   .page-bg::before,.page-bg::after{display:none}
-  .page-bg{background-image:url('/bg/mascot.webp');background-size:cover;background-position:center 70%}
-  html[data-theme=dark] .page-bg{background-image:url('/bg/mascot-dark.webp')}
+  .page-bg{background-image:image-set(url('/art/hero-light-1920.webp') 1x,url('/art/hero-light-3200.webp') 2x);background-size:cover;background-position:center var(--hero-y,70%)}
+  html[data-theme=dark] .page-bg{background-image:image-set(url('/art/hero-dark-1920.webp') 1x,url('/art/hero-dark-3200.webp') 2x)}
 }
 /* teks navbar polos di atas ilustrasi: gelap di mode terang, putih di mode gelap */
 body:has(.page-bg) .site-nav a{color:var(--ink)}
@@ -88,6 +92,14 @@ html[data-theme=dark] body:has(.page-bg) .site-nav a[aria-current=page]{color:#f
 .theme-toggle .i-sun{display:none}
 body:has(.page-bg) .theme-toggle{color:var(--ink);opacity:.75}
 html[data-theme=dark] body:has(.page-bg) .theme-toggle{color:#fff;opacity:.8}
+/* ---- EN | ID ---- */
+.lang-toggle{display:inline-flex;align-items:center;gap:5px;font:12px/1 var(--mono);color:var(--mute);margin-left:-8px}
+.lang-toggle a{padding:6px 2px;opacity:.7;transition:opacity .15s,color .15s}
+.lang-toggle a:hover{opacity:1;color:var(--ink)}
+.lang-toggle a[aria-current]{opacity:1;color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+.lang-toggle > span{opacity:.45}
+body:has(.page-bg) .lang-toggle{color:var(--ink)}
+html[data-theme=dark] body:has(.page-bg) .lang-toggle,html[data-theme=dark] body:has(.page-bg) .lang-toggle a[aria-current]{color:#fff}
 html[data-theme=dark] .theme-toggle .i-sun{display:block}
 html[data-theme=dark] .theme-toggle .i-moon{display:none}
 
@@ -242,15 +254,15 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
 /* ---- plate (index): latar dari tepi atas card sampai "salam kenal" ---- */
 .plate-block{position:relative}
 .plate-block > section{position:relative;z-index:1}
-.plate{position:absolute;top:0;bottom:-190px;left:calc(50% - 50vw);width:100vw;
+.plate{position:absolute;top:0;bottom:-330px;left:calc(50% - 50vw);width:100vw;
   overflow:hidden;z-index:0;background:#5a0b12;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 96px);
   mask-image:linear-gradient(to bottom,transparent 0,#000 96px)}
 .plate img{position:absolute;inset:0;display:block;width:100%;height:100%;
-  object-fit:cover;object-position:38% 40%;transform:scaleX(-1)}
-.plate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:190px;
+  object-fit:cover;object-position:50% 0%}
+.plate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:220px;
   background:linear-gradient(to bottom,transparent 0,rgba(22,4,8,.42) 55%,rgba(16,3,6,.93) 100%)}
-body:has(.plate-block) .site-foot{position:relative;z-index:1;margin-top:72px;color:#f4f3f0}
+body:has(.plate-block) .site-foot{position:relative;z-index:1;margin-top:212px;color:#f4f3f0}
 body:has(.plate-block) .site-foot .ticker{color:#fff}
 body:has(.plate-block) .plate-block .label{color:#5c5b64}
 html[data-theme=dark] .plate-block .label{color:#c2c1cb}
@@ -473,4 +485,86 @@ html[data-theme=dark] .pshot-empty{background:repeating-linear-gradient(135deg,t
   .desk-mat .desk-object{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) scale(.62);
     transform-origin:0 0}
   .desk-mat .desk-object:hover{transform:translate(var(--dx,0px),var(--dy,0px)) rotate(var(--rot,0deg)) scale(.62)}
+}
+
+/* ---- hero: maskot di tengah, teks di atasnya diberi selubung lembut ---- */
+.hero-text{position:relative;isolation:isolate}
+.hero-text::before{content:"";position:absolute;inset:-28px -40px;z-index:-1;pointer-events:none;border-radius:40px;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--bg) 82%,transparent) 0,color-mix(in srgb,var(--bg) 70%,transparent) 62%,transparent 100%);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  -webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);mask-image:radial-gradient(closest-side,#000 70%,transparent 100%)}
+@media (max-width:640px){
+  .site-nav{flex-wrap:wrap;row-gap:6px;gap:12px;padding-inline:12px}
+  .lang-toggle{margin-left:0}
+  .hero-text::before{inset:-20px -14px}
+}
+
+/* ---- About ---- */
+.about-art{position:relative;margin:0 0 0 calc(50% - min(34.5rem,50vw - 1rem));width:min(69rem,100vw - 2rem);
+  aspect-ratio:1920/1072;border-radius:22px;overflow:hidden;background:var(--card);
+  box-shadow:var(--lift);-webkit-mask-image:linear-gradient(#000 0,#000 78%,transparent 100%);
+  mask-image:linear-gradient(#000 0,#000 78%,transparent 100%)}
+.about-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:block}
+.about-art .about-art-dark{opacity:0;transition:opacity .8s cubic-bezier(.4,0,.2,1)}
+html[data-theme=dark] .about-art .about-art-dark{opacity:1}
+@media (prefers-reduced-motion:reduce){.about-art .about-art-dark{transition:none}}
+.page>.about-art+*{margin-top:-56px;position:relative}
+.about-head{text-align:center}
+.about-head .label{margin-bottom:6px}
+.about-name{font-size:clamp(30px,6vw,44px);line-height:1.05;letter-spacing:-.02em;color:var(--ink);margin:0;font-weight:600}
+.about-role{margin-top:10px;font:13px/1.4 var(--mono);color:var(--mute)}
+.about-bio{font-size:16px}
+.about-wide{width:min(46rem,100vw - 2rem);margin-left:calc(50% - min(23rem,50vw - 1rem))}
+.about-wide>.label{text-align:left}
+.about-note{color:var(--mute);opacity:.8}
+.about-areas{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.about-area{position:relative;padding:20px 20px 18px;border:1px solid var(--rule);border-radius:18px;
+  background:color-mix(in srgb,var(--card) 70%,transparent);overflow:hidden}
+.about-area::after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(closest-side,#d11a2a33,transparent);pointer-events:none}
+.about-area-k{font:11px/1 var(--mono);color:#c21a2a;letter-spacing:.08em}
+html[data-theme=dark] .about-area-k{color:#ff5a64}
+.about-area h2{margin:10px 0 6px;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.about-area p{font-size:14px;line-height:1.55}
+.about-tags{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+.about-tags li{font:11px/1 var(--mono);padding:6px 8px;border-radius:999px;border:1px solid var(--rule);color:var(--text);background:var(--bg)}
+.about-stats{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.about-stats a{display:flex;flex-direction:column;gap:4px;padding:16px;border-radius:16px;border:1px solid var(--rule);transition:background .15s}
+.about-stats a:hover{background:var(--card)}
+.about-stats b{font-size:30px;line-height:1;font-weight:600;color:var(--ink);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.about-stats span{font-size:12px;color:var(--mute)}
+.about-tools{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.about-tools li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--card)}
+.about-tools img{width:28px;height:28px;object-fit:contain;flex:none}
+html[data-theme=dark] .about-tools img[src$="nextdotjs.svg"],html[data-theme=dark] .about-tools img[src$="github.svg"]{filter:invert(1)}
+.about-tools span{display:flex;flex-direction:column;min-width:0}
+.about-tools b{font-size:14px;font-weight:600;color:var(--ink)}
+.about-tools small{font-size:12px;line-height:1.35;color:var(--mute)}
+.about-cta{margin-top:22px}
+@media (max-width:760px){
+  .about-areas{grid-template-columns:1fr}
+  .about-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .about-tools{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .about-art{aspect-ratio:4/5;border-radius:18px}
+  .page>.about-art+*{margin-top:-40px}
+  .about-tools{grid-template-columns:1fr}
+}
+
+/* hero: maskot di tengah — tangannya menggapai bintang, wajahnya tepat di bawahnya */
+.page-bg{--hero-y:0%}
+.page-bg,.page-bg::before,.page-bg::after{
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 58%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0,#000 58%,transparent 100%)}
+@media (max-width:640px){
+  .page-bg::before,.page-bg::after{background-position:center top}
+  .page-bg,.page-bg::before,.page-bg::after{
+    -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 74%,transparent 100%);
+    mask-image:linear-gradient(to bottom,#000 0,#000 74%,transparent 100%)}
+}
+html[data-theme=dark] .btn-cv.btn-ghost{color:var(--ink)}
+.about-name{white-space:nowrap;font-size:clamp(30px,8.4vw,40px)}
+@media (max-width:640px){
+  .page-bg::before,.page-bg::after{background-position:center -28px}
 }

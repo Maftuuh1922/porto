@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import Shelf from '../components/Shelf.astro';
+import ShotCard from '../components/ShotCard.astro';
+import { featured, projects, localize } from '../data/projects';
+import { localePath, type Lang } from '../i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const en = lang === 'en';
+const L = (p: string) => localePath(lang, p);
+const shelf = [...featured, ...projects.filter((p) => ['leave-no-trace', 'wastra'].includes(p.slug))].map((p) =>
+  localize(p, lang),
+);
+const idle = en ? 'pulsar · 1.4 M☉ · drag me' : 'pulsar · 1,4 M☉ · seret aku';
+---
+<Base title="Muhammad Maftuh" active="index" bg="mascot" lang={lang}>
+  <section class="wide hero-hole" aria-label={en ? 'Neutron star' : 'Bintang neutron'}>
+    <div
+      class="desk-object blackhole-object"
+      id="bh-object"
+      data-return
+      role="img"
+      aria-label={en
+        ? 'A neutron star with a red plasma disk and sweeping pulsar beams. Hover to trace the light paths; drag it toward the text and the words get pulled in; let go and the star returns on its own.'
+        : 'Bintang neutron dengan piringan plasma merah dan pancaran pulsar yang menyapu. Arahkan kursor untuk menelusuri jejak sinar; seret ke arah teks dan kata-katanya akan tersedot masuk; lepas, bintangnya kembali sendiri.'}
+    >
+      <canvas class="bh-rays" id="bh-rays" aria-hidden="true"></canvas>
+      <canvas id="bh-canvas" width="560" height="347"></canvas>
+    </div>
+    <p class="hole-caption">
+      <span
+        class="bh-readout"
+        id="bh-readout"
+        aria-live="polite"
+        data-idle={idle}
+        data-captured={en ? 'hits the surface' : 'menembus permukaan'}
+        data-bent={en ? 'bent' : 'ditekuk'}
+        data-num={en ? 'en-US' : 'id-ID'}>{idle}</span
+      >
+    </p>
+  </section>
+
+  <section class="block prose hero-text" data-gravity>
+    {
+      en ? (
+        <>
+          <p>
+            I’m <strong style="color:var(--ink)">Muhammad Maftuh</strong>, a student and software builder from
+            Bandung. I founded <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a> — a small studio
+            for websites and web apps whose ordering and payments run on their own — and I build
+            <a class="link" href="https://www.neovarchagent.web.id">Neovarch Agent</a>, an AI agent that runs on your PC
+            and is controlled from your phone.
+          </p>
+          <p>
+            Lately I’ve been writing a lot of tools that make coding agents trustworthy: one records and undoes the traces
+            an agent leaves behind, one stops it from killing processes that aren’t its own, and one keeps it honest when
+            a test truly can’t pass. In between there are plugins and themes for Omarchy, batik models on Hugging Face,
+            and a Roblox horror game. All of it, with real screenshots, is on the <a class="link" href={L('/work')}>work</a> page.
+          </p>
+          <p>
+            The neutron star above can be dragged — pull it down here and the words get sucked in. Find me on
+            <a class="link" href="https://github.com/Maftuuh1922">github</a> and
+            <a class="link" href="https://huggingface.co/maftuh-main">huggingface</a>, or
+            <a class="link" href={L('/contact')}>write to me directly</a> if there’s something you’d like to discuss.
+          </p>
+        </>
+      ) : (
+        <>
+          <p>
+            Saya <strong style="color:var(--ink)">Muhammad Maftuh</strong>, mahasiswa dan pembangun perangkat lunak dari
+            Bandung. Saya mendirikan <a class="link" href="https://www.neovarchlabs.web.id">NeovarchLabs</a> — studio kecil
+            untuk situs dan aplikasi web yang pemesanan dan pembayarannya berjalan sendiri — dan membangun
+            <a class="link" href="https://www.neovarchagent.web.id">Neovarch Agent</a>, agen AI yang jalan di PC Anda dan
+            dikendalikan dari HP.
+          </p>
+          <p>
+            Belakangan saya banyak menulis perkakas agar coding agent bisa dipercaya: satu mencatat dan membatalkan jejak yang
+            ditinggalkannya, satu mencegahnya mematikan proses yang bukan miliknya, satu lagi membuatnya jujur ketika tes
+            memang mustahil lulus. Di sela itu ada plugin dan tema untuk Omarchy, model batik di Hugging Face, dan game horor
+            Roblox. Semuanya, dengan tangkapan layar asli, ada di halaman <a class="link" href={L('/work')}>karya</a>.
+          </p>
+          <p>
+            Bintang neutron di atas boleh diseret — tarik ke sini, kata-katanya ikut tersedot. Temukan saya di
+            <a class="link" href="https://github.com/Maftuuh1922">github</a> dan
+            <a class="link" href="https://huggingface.co/maftuh-main">huggingface</a>, atau
+            <a class="link" href={L('/contact')}>tulis langsung</a> kalau ada yang ingin didiskusikan.
+          </p>
+        </>
+      )
+    }
+  </section>
+
+  <div class="plate-block">
+    <figure class="plate" aria-hidden="true">
+      {
+        (['light', 'dark'] as const).map((m) => (
+          <picture>
+            <source media="(max-width: 640px)" srcset={`/art/plate-${m}-m-700.webp 700w, /art/plate-${m}-m-1200.webp 1200w`} sizes="100vw" />
+            <img
+              class={`plate-${m}`}
+              src={`/art/plate-${m}-1920.webp`}
+              srcset={`/art/plate-${m}-1920.webp 1920w, /art/plate-${m}-3200.webp 3200w`}
+              sizes="100vw"
+              alt=""
+              width="1920"
+              height="1398"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        ))
+      }
+    </figure>
+
+    <Shelf label={en ? 'What I’m working on' : 'Yang sedang saya kerjakan'} caption={en ? 'Currently building' : 'Sedang dikerjakan'} lang={lang}>
+      {shelf.map((p) => <ShotCard p={p} lang={lang} />)}
+    </Shelf>
+  </div>
+</Base>
+
+<script>
+  import { initBlackHole } from '../scripts/blackhole';
+  initBlackHole();
+</script>

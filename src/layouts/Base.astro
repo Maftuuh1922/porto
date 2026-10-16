@@ -1,53 +1,52 @@
 ---
 import '../styles/global.css';
+import { asLang, localePath, stripLang, t } from '../i18n';
 
-const { title = 'Muhammad Maftuh', active = 'index', bg = '' } = Astro.props;
+const { title = 'Muhammad Maftuh', active = 'index', bg = '', description } = Astro.props;
+const lang = asLang(Astro.props.lang ?? Astro.currentLocale);
+const T = t(lang);
 
-const DESC =
-  'Muhammad Maftuh — mahasiswa dan pembangun perangkat lunak dari Bandung. Neovarch Agent, NeovarchLabs, perkakas untuk coding agent, plugin Omarchy, dan proyek sumber terbuka lainnya.';
-const pageUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.href;
-const ogImage = Astro.site ? new URL('/og.png', Astro.site).href : '/og.png';
+const DESC = description ?? T.desc;
+const is404 = Astro.props.is404 === true;
+/* 404 dipakai untuk semua jalur: tombol bahasanya menuju beranda masing-masing */
+const path = is404 ? '/' : stripLang(Astro.url.pathname).replace(/(.)\/$/, '$1');
+const abs = (p: string) => (Astro.site ? new URL(p, Astro.site).href : p);
+const pageUrl = abs(localePath(lang, path));
+const enUrl = abs(localePath('en', path));
+const idUrl = abs(localePath('id', path));
+const ogImage = abs('/og.png');
 
-// garis bawah bergelombang, panjangnya beda tiap label (persis gaya yuvich)
-const links = [
-  { id: 'index', href: '/', label: 'Index',
-    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 2.56 5.50 0 q2.75 -1.87 5.50 0 q2.75 1.78 5.50 0 q2.75 -2.35 5.50 0 q2.75 2.14 5.50 0 q1.73 -1.91 3.47 0',
-    w: 38.46875 },
-  { id: 'about', href: '/about', label: 'About',
-    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 2.24 5.50 0 q2.75 -1.67 5.50 0 q2.75 1.74 5.50 0 q2.75 -2.27 5.50 0 q2.75 1.97 5.50 0 q1.60 -2.19 3.20 0',
-    w: 43.703125 },
-  { id: 'work', href: '/work', label: 'Work',
-    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 1.92 5.50 0 q2.75 -2.58 5.50 0 q2.75 1.70 5.50 0 q2.75 -2.19 5.50 0 q2.75 1.80 5.50 0 q1.57 -2.16 3.14 0',
-    w: 38.140625 },
-  { id: 'now', href: '/now', label: 'Now',
-    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 1.61 5.50 0 q2.75 -2.38 5.50 0 q2.75 1.66 5.50 0 q2.75 -2.11 5.50 0 q0.93 1.63 1.86 0',
-    w: 31.359375 },
-  { id: 'contact', href: '/contact', label: 'Contact',
-    d: 'M1 3.5 q2.75 -1.55 5.50 0 q2.75 2.31 5.50 0 q2.75 -1.74 5.50 0 q2.75 1.69 5.50 0 q2.75 -2.42 5.50 0 q2.75 2.05 5.50 0 q1.66 -2.08 3.32 0',
-    w: 51.515625 },
-];
+const links = (['index', 'about', 'work', 'now', 'contact'] as const).map((id) => ({
+  id,
+  href: localePath(lang, id === 'index' ? '/' : `/${id}`),
+  label: T.nav[id],
+}));
 ---
 <!doctype html>
-<html lang="id">
+<html lang={T.htmlLang} data-lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={DESC} />
-    <link rel="canonical" href={pageUrl} />
+    {!is404 && <link rel="canonical" href={pageUrl} />}
+    {!is404 && <link rel="alternate" hreflang="en" href={enUrl} />}
+    {!is404 && <link rel="alternate" hreflang="id" href={idUrl} />}
+    {!is404 && <link rel="alternate" hreflang="x-default" href={enUrl} />}
     <meta name="theme-color" content="#fafaf9" />
 
     <!-- pratinjau saat tautan dibagikan (Telegram, WhatsApp, LinkedIn, Google) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Muhammad Maftuh" />
-    <meta property="og:locale" content="id_ID" />
+    <meta property="og:locale" content={T.ogLocale} />
+    <meta property="og:locale:alternate" content={lang === 'en' ? 'id_ID' : 'en_US'} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={DESC} />
     <meta property="og:url" content={pageUrl} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Muhammad Maftuh — portofolio" />
+    <meta property="og:image:alt" content={T.ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={DESC} />
@@ -71,12 +70,22 @@ const links = [
         }
         document.documentElement.dataset.theme = t;
       } catch (e) {}
+      /* bahasa: hanya kalau pembaca pernah memilih lewat tombol EN | ID.
+         Tanpa pilihan tersimpan (termasuk mesin pencari) tidak ada pengalihan. */
+      try {
+        var want = localStorage.getItem('lang');
+        var here = document.documentElement.dataset.lang;
+        var alt = document.querySelector('link[rel="alternate"][hreflang="' + want + '"]');
+        if ((want === 'en' || want === 'id') && want !== here && alt && !navigator.webdriver) {
+          location.replace(new URL(alt.getAttribute('href'), location.href).pathname + location.search + location.hash);
+        }
+      } catch (e) {}
     </script>
   </head>
   <body>
     {bg && <div class="page-bg" aria-hidden="true" data-hero />}
     <header>
-      <nav class="site-nav" aria-label="Pages">
+      <nav class="site-nav" aria-label={T.navLabel}>
         {
           links.map((l) => (
             <a href={l.href} aria-current={l.id === active ? 'page' : undefined}>
@@ -84,7 +93,7 @@ const links = [
             </a>
           ))
         }
-        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label="Ganti mode terang / gelap">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" aria-label={T.themeToggle}>
           <svg class="i-moon" viewBox="0 0 14 14" aria-hidden="true"
             ><path d="M12.2 8.7A5.7 5.7 0 0 1 5.3 1.8a5.7 5.7 0 1 0 6.9 6.9Z" fill="currentColor"></path></svg
           >
@@ -94,6 +103,13 @@ const links = [
             ></svg
           >
         </button>
+        <span class="lang-toggle" role="group" aria-label={T.langLabel}>
+          <a href={localePath('en', path)} hreflang="en" lang="en" data-set-lang="en"
+            aria-current={lang === 'en' ? 'true' : undefined} title="Read in English">EN</a>
+          <span aria-hidden="true">|</span>
+          <a href={localePath('id', path)} hreflang="id" lang="id" data-set-lang="id"
+            aria-current={lang === 'id' ? 'true' : undefined} title="Baca dalam Bahasa Indonesia">ID</a>
+        </span>
       </nav>
     </header>
 
@@ -102,15 +118,22 @@ const links = [
     </main>
 
     <footer class="site-foot">
-      <span>salam kenal</span>
+      <span>{T.footHello}</span>
       <span class="ticker" id="clock" data-live="1">Bandung, Indonesia</span>
     </footer>
 
     <script>
+      document.querySelectorAll<HTMLAnchorElement>('[data-set-lang]').forEach((a) =>
+        a.addEventListener('click', () => {
+          try {
+            localStorage.setItem('lang', a.dataset.setLang || 'en');
+          } catch (e) {}
+        }),
+      );
       const el = document.getElementById('clock');
       const tick = () => {
         if (!el) return;
-        const t = new Date().toLocaleTimeString('id-ID', { timeZone: 'Asia/Jakarta', hour12: false });
+        const t = new Date().toLocaleTimeString(document.documentElement.lang === 'id' ? 'id-ID' : 'en-GB', { timeZone: 'Asia/Jakarta', hour12: false });
         el.textContent = 'Bandung, Indonesia · ' + t + ' WIB';
       };
       tick();
