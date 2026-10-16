@@ -218,7 +218,7 @@ a.link:hover{color:var(--accent);border-color:var(--accent)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
 
 /* ---- hero (index): lubang hitam ---- */
-.hero-hole{width:min(var(--wide),100vw - 2rem);margin:-28px auto 0;padding:0 .8rem}
+.page>.hero-hole{width:min(var(--wide),100vw - 2rem);margin:-28px 0 0 calc((100% - min(var(--wide),100vw - 2rem)) / 2 - .8rem);padding:0 .8rem}
 .hero-hole .blackhole-object{z-index:30;width:100%;line-height:0;position:relative;
   touch-action:none;cursor:grab;user-select:none;
   transform:translate(var(--dx,0px),var(--dy,0px));will-change:transform}
@@ -247,7 +247,7 @@ a .gw{text-decoration:inherit;text-decoration-color:inherit;text-underline-offse
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 96px);
   mask-image:linear-gradient(to bottom,transparent 0,#000 96px)}
 .plate img{position:absolute;inset:0;display:block;width:100%;height:100%;
-  object-fit:cover;object-position:62% 40%}
+  object-fit:cover;object-position:38% 40%;transform:scaleX(-1)}
 .plate::after{content:"";position:absolute;left:0;right:0;bottom:0;height:190px;
   background:linear-gradient(to bottom,transparent 0,rgba(22,4,8,.42) 55%,rgba(16,3,6,.93) 100%)}
 body:has(.plate-block) .site-foot{position:relative;z-index:1;margin-top:72px;color:#f4f3f0}
@@ -256,6 +256,9 @@ body:has(.plate-block) .plate-block .label{color:#5c5b64}
 html[data-theme=dark] .plate-block .label{color:#c2c1cb}
 body:has(.plate-block) .shelf-pos{color:#e8e6e1;text-shadow:0 1px 3px rgba(5,9,24,.8)}
 body:has(.plate-block) .site-foot{color:#f4f3f0;text-shadow:0 1px 3px rgba(5,9,24,.8)}
+/* keterangan kartu di atas ilustrasi: pil kaca gelap supaya tetap terbaca di bagian ilustrasi yang terang */
+.plate-block .card-cap{background:rgba(24,5,9,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:7px 11px;margin-top:10px}
 /* kartu di atas ukiran dibuat lebih ringkas */
 .plate-block .card{width:min(17rem,100vw - 3rem)}
 

@@ -387,6 +387,15 @@ export function createScene(ctx: CanvasRenderingContext2D): Scene {
     const blitLayer = () => {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.drawImage(layer, 0, 0);
+      if (dark < 0.99) {
+        // di atas kertas krem, warna terang hilang — tambah satu lapis 'multiply'
+        // supaya piringannya terbaca seperti tinta merah pada ukiran
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.globalAlpha = (1 - dark) * 0.9;
+        ctx.drawImage(layer, 0, 0);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
       ctxT();
     };
 
