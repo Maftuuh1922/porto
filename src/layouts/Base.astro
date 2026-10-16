@@ -83,7 +83,32 @@ const links = (['index', 'about', 'work', 'now', 'contact'] as const).map((id) =
     </script>
   </head>
   <body>
-    {bg && <div class="page-bg" aria-hidden="true" data-hero />}
+    {
+      bg && (
+        <div class="page-bg" aria-hidden="true" data-hero>
+          {(['light', 'dark'] as const).map((m) => (
+            <picture>
+              <source
+                media="(max-width: 640px)"
+                srcset={`/art/hero-${m}-m-700.webp 700w, /art/hero-${m}-m-1100.webp 1100w`}
+                sizes="100vw"
+              />
+              <img
+                class={`hero-${m}`}
+                src={`/art/hero-${m}-1920.webp`}
+                srcset={`/art/hero-${m}-1920.webp 1920w, /art/hero-${m}-3200.webp 3200w`}
+                sizes="(max-width: 1500px) 1500px, 100vw"
+                alt=""
+                width="1920"
+                height="1072"
+                decoding="async"
+                fetchpriority={m === 'light' ? 'high' : 'low'}
+              />
+            </picture>
+          ))}
+        </div>
+      )
+    }
     <header>
       <nav class="site-nav" aria-label={T.navLabel}>
         {
